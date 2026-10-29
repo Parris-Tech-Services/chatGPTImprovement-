@@ -132,7 +132,7 @@ def validate(record: object) -> list[str]:
                 errors.append("VERIFIED COMPLETE requires PASS for " + c["id"])
                 continue
             proof = [ev_map[v] for v in r["evidence_ids"] if isinstance(v, str) and v in ev_map]
-            if not any(e.get("kind") == c["kind"] and e.get("provenance") in ACCEPTED_PROOF and e.get("observed_by") != record["actor"] for e in proof):
+            if not any(e.get("kind") == c["kind"] and _in(e.get("provenance"), ACCEPTED_PROOF) and e.get("observed_by") != record["actor"] for e in proof):
                 errors.append("VERIFIED COMPLETE requires independent evidence of matching kind for " + c["id"])
     elif status == "NOT STARTED":
         if results or evidence or any(isinstance(a, dict) and a.get("performed") for a in actions) or blocker is not None:
@@ -140,7 +140,7 @@ def validate(record: object) -> list[str]:
     elif status == "PARTIALLY COMPLETE":
         if not remaining:
             errors.append("PARTIALLY COMPLETE must name remaining work")
-        if not results and not evidence:
+        if not evidence and not any(r.get("outcome") == "PASS" for r in good_results):
             errors.append("PARTIALLY COMPLETE needs some recorded work/evidence")
     elif status == "BLOCKED":
         if not isinstance(blocker, dict) or not all(_text(blocker.get(k)) for k in ("reason", "attempted_alternatives", "next_action")):
@@ -158,7 +158,7 @@ def main() -> int:
     args = p.parse_args()
     try:
         data = json.loads(args.record.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as e:
+    except (OSError, UnicodeError, json.JSONDecodeError) as e:
         print(f"INVALID RECORD: {e}", file=sys.stderr)
         return 2
     if args.stamp_contract:
