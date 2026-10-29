@@ -18,7 +18,8 @@ from pathlib import Path
 TASK = "i02-ci-real-verifier-pilot"
 
 
-def run(argv: list[str], cwd: Path, *, expect: int = 0, label: str = "") -> dict:
+def run(argv: list[str], cwd: Path, *, expect: int = 0, label: str = "",
+        expected_text: str | None = None) -> dict:
     p = subprocess.run(argv, cwd=str(cwd), text=True, capture_output=True, timeout=240)
     # Never emit a full verifier receipt, source tree, signing key or secrets.
     result = {"step": label or " ".join(argv[:2]), "exit_code": p.returncode,
@@ -28,6 +29,11 @@ def run(argv: list[str], cwd: Path, *, expect: int = 0, label: str = "") -> dict
         print("STDOUT suffix:", p.stdout[-1400:], file=sys.stderr)
         print("STDERR suffix:", p.stderr[-1400:], file=sys.stderr)
         raise RuntimeError(f"{result['step']} returned unexpected exit code")
+    if expected_text and expected_text not in (p.stdout + "\n" + p.stderr):
+        print(f"FAIL {result['step']}: required rejection text absent", file=sys.stderr)
+        print("STDOUT suffix:", p.stdout[-1000:], file=sys.stderr)
+        print("STDERR suffix:", p.stderr[-1000:], file=sys.stderr)
+        raise RuntimeError(f"{result['step']} exited {expect} for the wrong reason")
     print(f"PASS {result['step']} (exit {p.returncode})")
     return result
 
@@ -123,20 +129,20 @@ def main() -> int:
     contract_file.parent.mkdir(parents=True, exist_ok=True)
     contract_file.write_text(yaml.safe_dump(contract), encoding="utf-8")
     steps.append(run(["aw", "task", "create", str(contract_file)], repo, label="anchored contract created"))
-    steps.append(run(["aw", "task", "verify", TASK], repo, expect=1, label="missing evidence rejects DONE"))
+    steps.append(run(["aw", "task", "verify", TASK], repo, expect=1, label="missing evidence rejects DONE", expected_text="NOT DONE"))
     steps.append(run(["aw", "final", "--session-id", TASK, "--task-id", TASK, "tests passed"],
-                     repo, expect=1, label="unwitnessed success claim rejected"))
+                     repo, expect=1, label="unwitnessed success claim rejected", expected_text="NOT VERIFIED"))
     steps.append(run(["aw", "run", "--session-id", TASK, "--", "pytest", "-q"],
                      repo, label="pytest actually broker-witnessed"))
     steps.append(run(["aw", "task", "verify", TASK], repo, label="contract independently evaluated DONE"))
     steps.append(run(["aw", "final", "--session-id", TASK, "--task-id", TASK, "tests passed"],
                      repo, label="evidence-backed claim passes final gate"))
     steps.append(run(["aw", "final", "--session-id", TASK, "--task-id", TASK, "tests passed and pushed"],
-                     repo, expect=1, label="unobserved push claim rejected"))
+                     repo, expect=1, label="unobserved push claim rejected", expected_text="NOT VERIFIED"))
     # The hardened backend is intentionally absent on this ephemeral Ubuntu
     # runner. Verify that it rejects instead of borrowing weaker local proof.
     steps.append(run(["aw", "task", "verify", TASK, "--hardened"], repo, expect=1,
-                     label="hardened verification fails without protected notary"))
+                     label="hardened verification fails without protected notary", expected_text="NOT DONE"))
     witnessed = evidence_summary(repo, TASK)
     llm = llm_policy_proof(llm_root)
     claim_file = repo / ".agentwitness" / "llm-report.md"
