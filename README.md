@@ -42,6 +42,15 @@ If verification cannot be performed, state **PARTIALLY COMPLETE** or **BLOCKED**
 - [KPI scorecard](docs/KPI_SCORECARD.md): operational definitions, denominators, targets, and DORA measures.
 - [Task evidence template](templates/TASK_EVIDENCE.md): consistent audit trail for every substantial task.
 
+## Already-developed accountability systems (29 October reconciliation)
+
+**Important correction:** the verification/continuity architecture is **not** a new PIP proposal. Existing [AgentCheck / AgentWitness](https://github.com/Parris-Tech-Services/AgentCheck), [LLMAccountability](https://github.com/Parris-Tech-Services/LLMAccountability), [JoshMemory](https://github.com/joshualparris/JoshMemory), and [ForgeGrid](https://github.com/Parris-Tech-Services/ForgeGrid) implement major parts of it already. A private multi-agent review/coordinator and local supervisor were also developed or discussed; don't publish private repo locations here.
+
+- [Live-source accountability inventory and integration gap audit](docs/EXISTING_ACCOUNTABILITY_STACK_AUDIT_2026-10-29.md)
+- [Recovered previous-chat decisions and chronology](docs/PREVIOUS_CHAT_HISTORY_ACCOUNTABILITY_2026-10-29.md)
+
+**First engineering step:** prove that the actual workflow *invokes* existing evidence gates and tests an actual user outcome. Publishing a process document does **not** configure ChatGPT or its hosted tools to use these local CLIs.
+
 ## Improvement sequence
 
 1. **Enforce evidence-backed completion and honest statuses immediately.**
