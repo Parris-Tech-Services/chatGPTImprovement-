@@ -9,6 +9,7 @@ Requires the `gh` CLI. Exit 1 when any item has a finding (the item URL is print
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -44,6 +45,8 @@ def main(argv: list[str]) -> int:
         notes += len(n)
         for f in found:
             print("FINDING " + f)
+            if os.environ.get("GITHUB_ACTIONS") == "true":
+                print("::error title=public-safety::" + f.replace("%", "%25"))
         bad += bool(found)
     print(f"discussion scan: {len(items)} item(s), {bad} with findings, {notes} unverified link note(s).")
     return 1 if bad else 0

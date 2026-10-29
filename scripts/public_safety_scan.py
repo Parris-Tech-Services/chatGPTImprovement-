@@ -179,6 +179,8 @@ def main(argv: list[str] | None = None) -> int:
             scanned += 1
     for f in findings:
         print("FINDING " + f)
+        if os.environ.get("GITHUB_ACTIONS") == "true":    # surface (already redacted) findings as annotations
+            print("::error title=public-safety::" + f.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A"))
     for n in sorted(set(notes)):
         print("NOTE " + n)
     print(f"public-safety scan: {scanned} item(s), {len(findings)} finding(s). Pattern scan only; not proof of absence.")
