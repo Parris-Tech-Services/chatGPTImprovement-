@@ -1,0 +1,92 @@
+name: Q01 live acceptance receipts (Repository Town)
+# Real-browser acceptance of a deployed app, bound to the release it reports:
+#  1. clean build of JoshMemory main must PASS every journey;
+#  2. the same build with one seeded user-facing fault must FAIL acceptance while its unit tests stay green;
+#  3. the live production site is checked and its receipt kept.
+on:
+  pull_request:
+    paths:
+      - 'scripts/acceptance/**'
+      - '.github/workflows/q01-live-acceptance.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  seeded-fault:
+    name: Clean build passes, seeded fault fails despite green unit tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: joshualparris/JoshMemory
+          path: town
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22'
+      - name: Install the app's pinned dependencies and Chromium
+        working-directory: town/repository-town
+        run: |
+          npm ci --no-audit --no-fund
+          npx playwright install --with-deps chromium
+      - name: Build and accept the clean release
+        working-directory: town/repository-town
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: |
+          node tools/build.mjs > /dev/null
+          cp "$GITHUB_WORKSPACE/scripts/acceptance/repository_town_receipt.mjs" ./q01-receipt.mjs
+          node tools/serve.mjs dist/public 8091 > /dev/null 2>&1 &
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:8091/ > /dev/null && break; sleep 1; done
+          node q01-receipt.mjs http://127.0.0.1:8091/ "$RUNNER_TEMP/receipts/clean.json"
+      - name: Seed one user-facing fault, prove unit tests still pass and acceptance fails
+        working-directory: town/repository-town
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: |
+          set -euo pipefail
+          grep -q "\$('panel').hidden = false;" src/main.js
+          sed -i "0,/\$('panel').hidden = false;/s//\$('panel').hidden = true; \/\/ SEEDED FAULT (Q01)/" src/main.js
+          grep -c "SEEDED FAULT (Q01)" src/main.js
+          node tools/build.mjs > /dev/null
+          for t in first-day staffed-counters shop-interiors hotel-lobby skills; do node tests/$t.mjs > /dev/null; echo "unit test still green: $t"; done
+          node tools/serve.mjs dist/public 8092 > /dev/null 2>&1 &
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:8092/ > /dev/null && break; sleep 1; done
+          node q01-receipt.mjs http://127.0.0.1:8092/ "$RUNNER_TEMP/receipts/seeded-fault.json" --expect-fail
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: q01-receipts-seeded-${{ github.run_id }}
+          path: ${{ runner.temp }}/receipts
+          retention-days: 14
+  production:
+    name: Live production acceptance receipt
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22'
+      - name: Install Playwright Chromium
+        run: |
+          mkdir -p "$RUNNER_TEMP/pw" && cd "$RUNNER_TEMP/pw" && npm init -y > /dev/null && npm install --no-audit --no-fund playwright@1.56.1 > /dev/null
+          npx playwright install --with-deps chromium
+      - name: Accept the live release
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: |
+          cp scripts/acceptance/repository_town_receipt.mjs "$RUNNER_TEMP/pw/q01-receipt.mjs"
+          node "$RUNNER_TEMP/pw/q01-receipt.mjs" https://repository-town-claude-complete.vercel.app/ "$RUNNER_TEMP/receipts/production.json"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: q01-receipts-production-${{ github.run_id }}
+          path: ${{ runner.temp }}/receipts
+          retention-days: 14
