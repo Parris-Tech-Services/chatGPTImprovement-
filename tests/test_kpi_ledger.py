@@ -130,6 +130,27 @@ class ReviewRegressionTests(unittest.TestCase):
         self.assertEqual(sum('unreadable' in e for e in rep['errors']), 3)
         self.assertEqual(rep['kpis']['end_to_end_task_success']['numerator_ids'], ['T1'])
 
+    def test_invalid_zero_followups_do_not_improve_average(self):
+        name, bad = rec('T-bad', corrective_followups=0)
+        bad['evidence'][0]['provenance'] = 'self_reported'
+        report = compute([rec('T-good', corrective_followups=2), (name, bad)])
+        value = report['kpis']['corrective_followups_per_task']
+        self.assertEqual(value['value'], 2.0)
+        self.assertEqual(value['per_task'], {'T-good': 2})
+        self.assertIn('T-bad', value['missing_ids'])
+
+    def test_invalid_utf8_is_reported_not_a_fatal_exception(self):
+        import tempfile
+        from kpi_ledger import load_records
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / 'damaged.json'
+            p.write_bytes(bytes([0xff, 0xfe]))
+            records = load_records(Path(d))
+        self.assertEqual(len(records), 1)
+        self.assertIn('__load_error__', records[0][1])
+        report = compute(records)
+        self.assertTrue(any('unreadable' in e for e in report['errors']))
+
     def test_totals_trace_back_to_tasks(self):
         rep = compute([rec('T1', corrective_followups=2, claims_made=3, claims_supported=3,
                            accepted_at='2026-10-29T01:00:00Z', verified_at='2026-10-29T02:30:00Z')])
