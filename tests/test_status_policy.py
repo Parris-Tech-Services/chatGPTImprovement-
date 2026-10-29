@@ -80,6 +80,21 @@ class StatusPolicyTests(unittest.TestCase):
     def test_partial_requires_remaining_and_some_work(self):
         data=good();data['status']='PARTIALLY COMPLETE';data['results']=[];data['evidence']=[]
         self.assertBad(data,'must name remaining work');self.assertBad(data,'needs some recorded work')
+    def test_all_not_run_cannot_count_as_partial(self):
+        data=good();data['status']='PARTIALLY COMPLETE';data['evidence']=[];data['remaining_work']=['Everything']
+        for result in data['results']:
+            result['outcome']='NOT_RUN';result['evidence_ids']=[]
+        self.assertBad(data,'needs some recorded work/evidence')
+    def test_malformed_nested_provenance_does_not_crash(self):
+        data=good();data['evidence'][-1]['provenance']=[]
+        self.assertBad(data,'evidence must have')
+        self.assertBad(data,'requires independent evidence')
+    def test_invalid_utf8_returns_input_error(self):
+        with tempfile.TemporaryDirectory() as d:
+            p=Path(d)/'bad.json';p.write_bytes(b'\\xff')
+            proc=subprocess.run([sys.executable,str(ROOT/'scripts/check_task_record.py'),str(p)],capture_output=True,text=True)
+            self.assertEqual(proc.returncode,2,proc.stdout)
+            self.assertIn('INVALID RECORD',proc.stderr)
     def test_valid_partial(self):
         data=good();data['status']='PARTIALLY COMPLETE';data['results'][-1]['outcome']='NOT_RUN';data['remaining_work']=['Live acceptance outstanding']
         self.assertEqual(validate(data),[])
