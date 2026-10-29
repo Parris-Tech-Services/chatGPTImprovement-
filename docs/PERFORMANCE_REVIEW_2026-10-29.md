@@ -4,6 +4,12 @@
 **Evaluator perspective:** simulated manager.  
 **Review status:** **PROVISIONAL / INCOMPLETE EVIDENCE**.
 
+## Correction after examining the previously built tools
+
+On 29 October, the separate [existing-stack audit](EXISTING_ACCOUNTABILITY_STACK_AUDIT_2026-10-29.md) and [recovered discussion chronology](PREVIOUS_CHAT_HISTORY_ACCOUNTABILITY_2026-10-29.md) found that **AgentCheck/AgentWitness already implements anchored Definitions of Done, signed evidence receipts, ClaimGuard and a final-answer gate**; LLMAccountability already provides independent protected test/Git attestations; JoshMemory already implements durable accountability references and handoffs. Additional review/supervision tooling exists or has been historically reported.
+
+The root-cause hypothesis in this review should therefore be read as **'the existing DoD and evidence-gating systems are not consistently integrated/enforced in the user's actual end-to-end workflow'**, **not** 'we need to invent a new verifier or DoD'. The provisional numeric ratings remain subjective until complete transcripts and outcome traces are audited. The priority is [dogfooding the existing stack](../docs/PIP_001_SENIOR_EXECUTION.md), not duplicating it.
+
 ## Important evidence disclosure
 
 This review was originally prepared from available recent-conversation summaries and user feedback. The assistant **did not read or individually audit 50–100 full conversations**. No numerical task completion, factual accuracy, deployment failure, or rework *rates* were measured. A future retrospective must first build and validate the evidence ledger.
