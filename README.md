@@ -39,6 +39,7 @@ If verification cannot be performed, state **PARTIALLY COMPLETE** or **BLOCKED**
 
 - [Performance review](docs/PERFORMANCE_REVIEW_2026-10-29.md): ratings, evidence boundaries, risks, and root-cause hypotheses.
 - [PIP and operating standard](docs/PIP_001_SENIOR_EXECUTION.md): 20-task improvement cycle with acceptance gates and measurable objectives.
+- [KPI scorecard](docs/KPI_SCORECARD.md): operational definitions, denominators, targets, and DORA measures.
 - [Task evidence template](templates/TASK_EVIDENCE.md): consistent audit trail for every substantial task.
 
 ## Improvement sequence
