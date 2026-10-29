@@ -60,7 +60,7 @@ If verification cannot be performed, state **PARTIALLY COMPLETE** or **BLOCKED**
 
 - **[52 specific backlog tasks with individual acceptance criteria](docs/MASTER_ACTION_BACKLOG_2026-10-29.md)** — 10 ownership tracks, priorities P0/P1/P2, dependencies, links to [issues #1–#10](https://github.com/Parris-Tech-Services/chatGPTImprovement-/issues) and clear blockers.
 - [CSV task register](docs/MASTER_ACTION_BACKLOG_2026-10-29.csv) — importable task IDs, owners, priority, acceptance, dependencies and matching GitHub issue numbers.
-- **19 P0 / 29 P1 / 4 P2** tasks. Functional ownership is assigned to systems and repositories; no GitHub person has been individually assigned and no external agent task has been launched.
+- **1 of 52 VERIFIED COMPLETE (G01)**: [canonical DoD policy](docs/DEFINITION_OF_DONE_V1.md), [G01 acceptance evidence](docs/evidence/G01_2026-10-29.json), [PR #11](https://github.com/Parris-Tech-Services/chatGPTImprovement-/pull/11). **51 remain OPEN** (18 P0, 29 P1, 4 P2). Functional ownership remains by system/repository, not a named GitHub assignee.
 - Read the relevant existing source and work before implementing; missing tool access or prior-transcript coverage is an **open blocker**, not proof that a task is finished.
 
 ## Improvement sequence
