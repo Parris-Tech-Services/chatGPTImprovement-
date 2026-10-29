@@ -82,13 +82,15 @@ def llm_policy_proof(llm_root: Path) -> dict:
     # Demonstrate a positive supported claim with controlled test evidence as a
     # POLICY UNIT TEST ONLY, never advertise this as notary-attested completion.
     tests = [c for c in claims if c["type"] == "tests-pass"]
-    pass_policy = PolicyEngine.evaluate(tests, {tests[0]["id"]: RecipeResult(Verdict.PASS, {})})
+    pass_policy = PolicyEngine.evaluate(
+        tests, {c["id"]: RecipeResult(Verdict.PASS, {}) for c in tests}
+    )
     if pass_policy["final_verdict"] != Verdict.PASS:
         raise RuntimeError("Policy did not accept supported positive test claim")
     return {"actual_llm_source_invoked": True, "claim_types_extracted": sorted(names),
             "missing_evidence_fail_closed": True,
             "unsupported_fully_complete_rejected": True,
-            "positive_policy_unit_case": True,
+            "positive_policy_unit_case": True,\n            "duplicate_tests_pass_claims_seen": len(tests) > 1,
             "protected_notary_invoked": False, "notary_attestation": "NOT RUN"}
 
 
