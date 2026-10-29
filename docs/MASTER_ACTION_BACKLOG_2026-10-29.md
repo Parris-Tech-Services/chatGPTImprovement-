@@ -3,7 +3,7 @@
 **Compiled:** 29 October 2026 (Australia/Sydney)  
 **Scope:** All outstanding action items surfaced in this ChatGPT improvement conversation, current research/PIP documents and directly inspected relevant repositories. This does **not** claim a comprehensive audit of every previous chat, all open projects or private machine state.
 
-**Status:** 52 specific items identified; **5 VERIFIED COMPLETE (G01, I02, S01, R01, S03), 47 OPEN**. The G01 evidence is linked below; remaining underlying capabilities may exist, but their specific acceptance requirements are still unverified in this programme. Some underlying capabilities already exist; OPEN means the **specific acceptance evidence requested here has not been produced in this programme**. Existing features should be verified before new engineering work is started.
+**Status:** 53 specific items identified; **6 VERIFIED COMPLETE (G01, I02, S01, R01, S03, L07), 47 OPEN**. The G01 evidence is linked below; remaining underlying capabilities may exist, but their specific acceptance requirements are still unverified in this programme. Some underlying capabilities already exist; OPEN means the **specific acceptance evidence requested here has not been produced in this programme**. Existing features should be verified before new engineering work is started.
 
 **Owner assignment:** Functional system/repository is assigned below, **not a GitHub user or an autonomous agent invocation**. No people were assigned or notified. Private review/supervisor work is role-named without exposing private repository URLs.
 
@@ -22,7 +22,7 @@
 | G | Governance, baseline and PIP | chatGPTImprovement- | 7 | [Existing issue #1](https://github.com/Parris-Tech-Services/chatGPTImprovement-/issues/1) |
 | I | Cross-project adoption and integration | chatGPTImprovement- / existing components | 5 | [Existing issue #2](https://github.com/Parris-Tech-Services/chatGPTImprovement-/issues/2) |
 | A | AgentCheck / AgentWitness | Parris-Tech-Services/AgentCheck | 6 | [Issue #3](https://github.com/Parris-Tech-Services/chatGPTImprovement-/issues/3) |
-| L | LLMAccountability hardened evidence | Parris-Tech-Services/LLMAccountability | 6 | [Issue #4](https://github.com/Parris-Tech-Services/chatGPTImprovement-/issues/4) |
+| L | LLMAccountability hardened evidence | Parris-Tech-Services/LLMAccountability | 7 | [Issue #4](https://github.com/Parris-Tech-Services/chatGPTImprovement-/issues/4) |
 | C | Independent review and supervisor (private components) | Existing private reviewer/coordinator and mission supervisor | 5 | [Issue #5](https://github.com/Parris-Tech-Services/chatGPTImprovement-/issues/5) |
 | M | JoshMemory continuity and evidence references | joshualparris/JoshMemory | 5 | [Issue #6](https://github.com/Parris-Tech-Services/chatGPTImprovement-/issues/6) |
 | F | ForgeGrid execution and fleet | Parris-Tech-Services/ForgeGrid | 4 | [Issue #7](https://github.com/Parris-Tech-Services/chatGPTImprovement-/issues/7) |
@@ -79,6 +79,9 @@
 - [ ] **L04 · P1 · Evidence-based security-reviewed claim.** Action: Define exact verifiable coverage (SAST, dependency, policy, human review ID) rather than blanket 'security reviewed'; implement only measurable subclaims. **Done only when:** Unsupported/general security assertions remain INCONCLUSIVE; checks bound to commit and CI evidence. **Depends on:** L01,I03.
 - [ ] **L05 · P1 · Composite fully-complete attestation policy.** Action: Require verified test, push, acceptance, permissions and actual runtime state; do not substitute recipe aggregate for semantic verification. **Done only when:** A missing browser outcome or policy check cannot produce fully-complete PASS; tests include partial evidence. **Depends on:** L02,Q01.
 - [ ] **L06 · P1 · Hardening, isolation and platform-profile adversarial audit.** Action: Review OS identity separation, HMAC, signing key, runner limits, Python vs npm profiles and replay/nonce handling in real approved Windows sandbox. **Done only when:** Privileged/integration adversarial suite runs with redacted logs, reports actual isolation vs aspirational claims, follows no-secret/no-escalation policy. **Depends on:** L01,S02.
+
+- [x] **L07 · P1 · Eliminate duplicate overlapping completion claims.** Action: Fix the V2 ClaimExtractor regex-pattern loop in the existing LLMAccountability repository and retain stable report-bound IDs. **Done only when:** Real source merged, regression suite covers overlapping and unaffected claims, independent review and exact merged commit CI PASS. **Depends on:** I02.
+  **Verified evidence:** [L07 evidence](evidence/L07_2026-10-29.json), [LLMAccountability PR #1](https://github.com/Parris-Tech-Services/LLMAccountability/pull/1), [postmerge CI](https://github.com/Parris-Tech-Services/LLMAccountability/actions/runs/40844485710). This does not prove the Windows protected notary is reachable.
 
 ### C — Independent review and supervisor (private components)
 
