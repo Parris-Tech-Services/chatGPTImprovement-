@@ -74,7 +74,7 @@ def _matches(action: Action, authority: Authority, now: datetime) -> bool:
         authority.request_id) != (action.task_id, action.kind, action.target,
                                   action.payload_digest, action.request_id):
         return False
-    if action.kind in MAIL_ACTIONS and not authority.explicit_send_permission:
+    if action.kind in MAIL_ACTIONS and authority.explicit_send_permission is not True:
         return False
     expiry = authority.expires_utc
     if not isinstance(expiry, datetime) or expiry.tzinfo is None or expiry.utcoffset() is None:
