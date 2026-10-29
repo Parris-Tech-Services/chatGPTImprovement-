@@ -86,3 +86,15 @@ These inform the management approach; our KPI targets are locally proposed, **no
 ## Security and privacy
 
 This is a **public** repository. Do not commit raw user chats, personal details, customer data, internal URLs, credentials, or unredacted incident evidence. Use anonymised incident IDs and links only to information authorised for public disclosure.
+
+
+## What improves a real app today? (30 October 2026)
+
+There are now two distinct **running** integrations, not merely documents:
+
+- [FaithHub's actual AgentWitness acceptance workflow](https://github.com/Parris-Tech-Services/FaithHub/blob/main/.github/workflows/agentwitness-acceptance.yml) runs automatically on each FaithHub PR and main push. It uses a pinned real AgentWitness CLI, freezes a task contract, tests a negative 'done-before-proof' case, runs actual Node regressions, Chromium mobile/desktop application interactions and a Vite build under witnessed pytest, checks the signature/receipt chain, and records a source-SHA-specific redacted CI receipt. See [post-merge execution](https://github.com/Parris-Tech-Services/FaithHub/actions/runs/40957878172). This is **not** a privileged Windows notary or universal ChatGPT hook.
+- [Daily real-world quality and accountability](.github/workflows/daily-quality.yml) is a scheduled, read-only GitHub Actions report with an explicit manual trigger. It checks this repository's G04 evidence ledger, recent **default-branch** CI status for public FaithHub, JoshRS, AgentCheck, LLMAccountability and JoshMemory sources, and basic live HTTP health for FaithHub. The report is posted to its [Actions run summary](https://github.com/Parris-Tech-Services/chatGPTImprovement-/actions/workflows/daily-quality.yml) and archived as a JSON/Markdown artifact (30 days). It does **not** email anyone, access private repositories or silently count missing evidence as success. [First successful run after merge](https://github.com/Parris-Tech-Services/chatGPTImprovement-/actions/runs/40958115003).
+
+**Measured limits:** The initial report found six of 53 tasks marked complete and six structurally consistent evidence records. No sampled user-level daily completion denominator or reliable rework/accuracy trend has been established. G02/G03/G05 and hardened L01/I04 work remain outstanding. Green CI, signed unprivileged receipts, or public HTTP 200 do not prove all user-visible flows or change the base ChatGPT model.
+
+**Live acceptance is separate:** FaithHub's GitHub Pages deploy and its matching-commit public browser journey must be verified separately. Do not credit a PR's local Playwright run as proof that the deployed site contains its changes.
