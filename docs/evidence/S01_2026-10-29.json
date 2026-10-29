@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "task_id": "S01",
+  "task_type": "software",
+  "user_facing": false,
+  "actor": "ChatGPT implementer",
+  "status": "VERIFIED COMPLETE",
+  "contract": {
+    "user_outcome": "Codify consequential action approval, prevent unscoped synthetic external actions, and document production host integration boundary",
+    "criteria": [
+      {
+        "id": "S01-A",
+        "kind": "artifact",
+        "description": "Canonical scoped approval policy and reference implementation merged into main"
+      },
+      {
+        "id": "S01-T",
+        "kind": "test",
+        "description": "Negative permission, send-specific consent, expiry, replay and escalation tests pass on exact merged commit"
+      },
+      {
+        "id": "S01-R",
+        "kind": "review",
+        "description": "Independent Greptile review of final PR head with no unresolved blocking findings"
+      }
+    ],
+    "digest_sha256": "9816199d271bddb12cfbcfaf1e93ab17a413026000d8f2af2e6003c7d06e7ca5"
+  },
+  "results": [
+    {
+      "criterion_id": "S01-A",
+      "outcome": "PASS",
+      "evidence_ids": [
+        "s01-policy",
+        "s01-code"
+      ]
+    },
+    {
+      "criterion_id": "S01-T",
+      "outcome": "PASS",
+      "evidence_ids": [
+        "s01-ci",
+        "s01-witness"
+      ]
+    },
+    {
+      "criterion_id": "S01-R",
+      "outcome": "PASS",
+      "evidence_ids": [
+        "s01-review"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "s01-policy",
+      "kind": "artifact",
+      "reference": "https://github.com/Parris-Tech-Services/chatGPTImprovement-/blob/main/docs/ACTION_APPROVAL_POLICY_V1.md",
+      "provenance": "external_observed",
+      "observed_by": "GitHub contents API"
+    },
+    {
+      "id": "s01-code",
+      "kind": "artifact",
+      "reference": "https://github.com/Parris-Tech-Services/chatGPTImprovement-/blob/main/scripts/action_authority.py",
+      "provenance": "external_observed",
+      "observed_by": "GitHub contents API"
+    },
+    {
+      "id": "s01-ci",
+      "kind": "test",
+      "reference": "https://github.com/Parris-Tech-Services/chatGPTImprovement-/actions/runs/40840980335",
+      "provenance": "external_observed",
+      "observed_by": "GitHub Actions"
+    },
+    {
+      "id": "s01-witness",
+      "kind": "test",
+      "reference": "https://github.com/Parris-Tech-Services/chatGPTImprovement-/actions/runs/40840980350",
+      "provenance": "external_observed",
+      "observed_by": "GitHub Actions + AgentWitness"
+    },
+    {
+      "id": "s01-review",
+      "kind": "review",
+      "reference": "https://github.com/Parris-Tech-Services/chatGPTImprovement-/pull/15",
+      "provenance": "external_observed",
+      "observed_by": "Greptile independent review final SHA 25ac7788b30f7a29c53f29ff37fc77b7f583571d"
+    }
+  ],
+  "external_actions": [
+    {
+      "action": "merge",
+      "performed": true,
+      "approval_reference": "Current user instruction 2026-10-29 to complete and push changes to chatGPTImprovement- without repeated confirmation",
+      "approval_scope": "merge"
+    }
+  ],
+  "remaining_work": [],
+  "blocker": null
+}
