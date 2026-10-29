@@ -3,7 +3,7 @@
 **Compiled:** 29 October 2026 (Australia/Sydney)  
 **Scope:** All outstanding action items surfaced in this ChatGPT improvement conversation, current research/PIP documents and directly inspected relevant repositories. This does **not** claim a comprehensive audit of every previous chat, all open projects or private machine state.
 
-**Status:** 51 specific items identified, **all OPEN / not yet implemented by this backlog commit**. Some underlying capabilities already exist; OPEN means the **specific acceptance evidence requested here has not been produced in this programme**. Existing features should be verified before new engineering work is started.
+**Status:** 52 specific items identified, **all OPEN / not yet implemented by this backlog commit**. Some underlying capabilities already exist; OPEN means the **specific acceptance evidence requested here has not been produced in this programme**. Existing features should be verified before new engineering work is started.
 
 **Owner assignment:** Functional system/repository is assigned below, **not a GitHub user or an autonomous agent invocation**. No people were assigned or notified. Private review/supervisor work is role-named without exposing private repository URLs.
 
@@ -26,7 +26,7 @@
 | C | Independent review and supervisor (private components) | Existing private reviewer/coordinator and mission supervisor | 5 | [Issue #5](https://github.com/Parris-Tech-Services/chatGPTImprovement-/issues/5) |
 | M | JoshMemory continuity and evidence references | joshualparris/JoshMemory | 5 | [Issue #6](https://github.com/Parris-Tech-Services/chatGPTImprovement-/issues/6) |
 | F | ForgeGrid execution and fleet | Parris-Tech-Services/ForgeGrid | 4 | [Issue #7](https://github.com/Parris-Tech-Services/chatGPTImprovement-/issues/7) |
-| Q | Real-world QA, evals, tool-failure resilience | Cross-project test harness / target application repo | 5 | [Issue #8](https://github.com/Parris-Tech-Services/chatGPTImprovement-/issues/8) |
+| Q | Real-world QA, evals, tool-failure resilience | Cross-project test harness / target application repo | 6 | [Issue #8](https://github.com/Parris-Tech-Services/chatGPTImprovement-/issues/8) |
 | R | External deep research and controlled experiments | chatGPTImprovement- research / existing evaluation runners | 5 | [Issue #9](https://github.com/Parris-Tech-Services/chatGPTImprovement-/issues/9) |
 | S | Permissions, privacy and supply-chain trust | All components (security gate) | 3 | [Issue #10](https://github.com/Parris-Tech-Services/chatGPTImprovement-/issues/10) |
 
@@ -114,6 +114,8 @@
 - [ ] **Q03 · P1 · Run realistic fault-injection suite for agent tool calls.** Action: Adapt ideas from RetryRealistic: timeout, truncated results, 401, 403, partial write, malformed JSON, stale output, nonzero exit. **Done only when:** Measured correct recovery, honest failure, fabrication and tool calls across repeated seeded tests; no real customer mutations. **Depends on:** Q02,S01.
 - [ ] **Q04 · P1 · Implement read-after-write/idempotency at consequential tool boundaries.** Action: For permitted state-changing actions design request IDs, retry classifier and post-write check to avoid duplicate merges/deploys/external actions. **Done only when:** Simulated lost ACK does not duplicate effects; permanent errors are not blindly retried; user approval remains mandatory. **Depends on:** Q03,S01.
 - [ ] **Q05 · P1 · Measure actual user effort and real UX satisfaction.** Action: Record reopen/corrective follow-up, tested scenarios and user-confirmed acceptance separately from CI and PR counts. **Done only when:** Pilot report shows corrective user turns per task, bugs after deploy and verified product behaviour; normal scope change excluded from rework. **Depends on:** G04,Q01.
+
+- [ ] **Q06 · P1 · Reuse existing code-quality gates and test-adequacy signals.** Action: Audit existing private code-quality tooling before proposing a new scanner; integrate available complexity, per-function coverage, mutation, lint and security findings into the task evidence model without equating a good score to functioning UX. **Done only when:** At least one approved sample repository reports actual coverage and mutation/complexity results, generated code exclusions and no fabricated green on missing data; independently verify relevant user flow. **Depends on:** Q01,G04.
 
 ### R — External deep research and controlled experiments
 
