@@ -71,7 +71,7 @@ def load_records(directory: Path) -> list[tuple[str, dict]]:
     for p in sorted(directory.glob("*.json")):
         try:
             out.append((p.name, json.loads(p.read_text(encoding="utf-8"))))
-        except (OSError, json.JSONDecodeError) as e:
+        except (OSError, UnicodeError, json.JSONDecodeError) as e:
             out.append((p.name, {"__load_error__": str(e)}))
     return out
 
@@ -121,7 +121,7 @@ def compute(records: list[tuple[str, dict]], register: list[dict] | None = None)
     rework_known = [t for t in completed if isinstance(kpi[t].get("assistant_rework"), bool)]
     rework_yes = [t for t in rework_known if kpi[t]["assistant_rework"]]
 
-    fu_known = [t for t in eligible if type(kpi[t].get("corrective_followups")) is int and kpi[t]["corrective_followups"] >= 0]
+    fu_known = [t for t in eligible if valid[t] and type(kpi[t].get("corrective_followups")) is int and kpi[t]["corrective_followups"] >= 0]
     fu_total = sum(kpi[t]["corrective_followups"] for t in fu_known)
 
     # Claimed support only counts from records whose own evidence passes validation.
