@@ -21,14 +21,14 @@
 |---|---|---|---:|---|
 | G | Governance, baseline and PIP | chatGPTImprovement- | 7 | [Existing issue #1](https://github.com/Parris-Tech-Services/chatGPTImprovement-/issues/1) |
 | I | Cross-project adoption and integration | chatGPTImprovement- / existing components | 5 | [Existing issue #2](https://github.com/Parris-Tech-Services/chatGPTImprovement-/issues/2) |
-| A | AgentCheck / AgentWitness | Parris-Tech-Services/AgentCheck | 6 | To be created |
-| L | LLMAccountability hardened evidence | Parris-Tech-Services/LLMAccountability | 6 | To be created |
-| C | Independent review and supervisor (private components) | Existing private reviewer/coordinator and mission supervisor | 5 | To be created |
-| M | JoshMemory continuity and evidence references | joshualparris/JoshMemory | 5 | To be created |
-| F | ForgeGrid execution and fleet | Parris-Tech-Services/ForgeGrid | 4 | To be created |
-| Q | Real-world QA, evals, tool-failure resilience | Cross-project test harness / target application repo | 5 | To be created |
-| R | External deep research and controlled experiments | chatGPTImprovement- research / existing evaluation runners | 5 | To be created |
-| S | Permissions, privacy and supply-chain trust | All components (security gate) | 3 | To be created |
+| A | AgentCheck / AgentWitness | Parris-Tech-Services/AgentCheck | 6 | [Issue #3](https://github.com/Parris-Tech-Services/chatGPTImprovement-/issues/3) |
+| L | LLMAccountability hardened evidence | Parris-Tech-Services/LLMAccountability | 6 | [Issue #4](https://github.com/Parris-Tech-Services/chatGPTImprovement-/issues/4) |
+| C | Independent review and supervisor (private components) | Existing private reviewer/coordinator and mission supervisor | 5 | [Issue #5](https://github.com/Parris-Tech-Services/chatGPTImprovement-/issues/5) |
+| M | JoshMemory continuity and evidence references | joshualparris/JoshMemory | 5 | [Issue #6](https://github.com/Parris-Tech-Services/chatGPTImprovement-/issues/6) |
+| F | ForgeGrid execution and fleet | Parris-Tech-Services/ForgeGrid | 4 | [Issue #7](https://github.com/Parris-Tech-Services/chatGPTImprovement-/issues/7) |
+| Q | Real-world QA, evals, tool-failure resilience | Cross-project test harness / target application repo | 5 | [Issue #8](https://github.com/Parris-Tech-Services/chatGPTImprovement-/issues/8) |
+| R | External deep research and controlled experiments | chatGPTImprovement- research / existing evaluation runners | 5 | [Issue #9](https://github.com/Parris-Tech-Services/chatGPTImprovement-/issues/9) |
+| S | Permissions, privacy and supply-chain trust | All components (security gate) | 3 | [Issue #10](https://github.com/Parris-Tech-Services/chatGPTImprovement-/issues/10) |
 
 ## Exact tasks and acceptance conditions
 
