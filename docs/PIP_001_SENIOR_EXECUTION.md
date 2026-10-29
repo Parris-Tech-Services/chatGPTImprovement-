@@ -35,6 +35,12 @@ For each executable task:
 
 **Safety gate:** Never send emails or other externally consequential communications without the user's explicit, send-specific permission. Do not circumvent authentication, branch protection, financial limits or required approvals. Do not disclose private data in public repositories.
 
+## G01 canonical policy (machine-checked record hygiene)
+
+The task's public status vocabulary and *necessary* evidence gates are specified in [the canonical G01 Definition of Done](DEFINITION_OF_DONE_V1.md). The companion `scripts/check_task_record.py` rejects inconsistent claims and is covered by adversarial CI tests. Its green output is **not** a signed attestation, independent user-outcome verification, or a replacement for AgentWitness's signed contract creation and final gate. For user-facing tasks it requires a separately evidenced **live** criterion in addition to test/commit/deploy evidence.
+
+The authority boundary is essential: AgentWitness/LLMAccountability where reachable provide actual witnessed/signed evidence; the PIP record is merely a status/evidence index. If an integration is unreachable, mark that verification BLOCKED/NOT VERIFIED, never claim the tool ran.
+
 ## Standardised completion statuses
 
 | Status | Permitted when | Required reporting |
