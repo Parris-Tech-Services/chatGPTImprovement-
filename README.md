@@ -54,6 +54,7 @@ If verification cannot be performed, state **PARTIALLY COMPLETE** or **BLOCKED**
 ## Deep research briefing
 
 - [Deep Research: peak AI-agent performance, evidence, evaluations and existing-stack reuse](research/DEEP_RESEARCH_BRIEF_AGENT_PEAK_PERFORMANCE_2026-10-29.md) — copy-ready independent research instructions, prior-work reconciliation, current external leads, falsifiable evaluation requirements and implementation priorities.
+- [What external teams actually did — published results and our countermeasures](research/EXTERNAL_AI_AGENT_PERFORMANCE_FINDINGS_2026-10-29.md) — first substantive external research pass; 15 interventions with source URLs, research quality limitations, actual code inspected, and three reproducible experiments.
 
 ## Improvement sequence
 
