@@ -63,6 +63,13 @@ class PublicSafetyScanTests(unittest.TestCase):
         self.assertTrue(any('unverified-repo-link' in f for f in self.scan('see ' + GHURL + 'acme/unknown')),
                         'unknown visibility must fail in strict (CI) mode')
 
+    def test_github_owner_repo_placeholder_is_not_private_project(self):
+        # Reviewer example syntax must not lock CI into a permanent false failure.
+        # This exception applies only to the conventional exact placeholder.
+        placeholder = GHURL + 'owner/repo'
+        self.assertEqual(self.scan('example: ' + placeholder), [])
+        self.assertFlags('example: ' + GHURL + 'acme/secret-tool', 'private-repo-link')
+
     def test_clean_public_text_passes(self):
         clean = ('Use noreply@anthropic.com and git@github.com:example-org/public-repo.git.\n'
                  'Runner path /home/runner/work and placeholder C:\\Users\\<you>\\repo.\n'
