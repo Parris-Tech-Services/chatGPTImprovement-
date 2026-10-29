@@ -133,6 +133,11 @@ def scan_text(text: str, where: str, allow: dict, offline: bool, notes: list[str
             owner, repo = m.group(1), m.group(2)
             if owner.lower() in {"orgs", "settings", "features", "apps", "marketplace", "topics", "sponsors"}:
                 continue
+            # Conventional example URL used in reviewer documentation; not a real
+            # GitHub repository locator. Keep the exception EXACT, and do not
+            # exempt any actual private owner or any other repository.
+            if owner.casefold() == "owner" and repo.casefold() == "repo":
+                continue
             full = f"{owner}/{repo}"
             if full.lower() in allow["public_repos"]:
                 continue
