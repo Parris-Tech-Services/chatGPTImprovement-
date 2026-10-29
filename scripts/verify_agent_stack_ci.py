@@ -133,8 +133,25 @@ def main() -> int:
                      repo, label="evidence-backed claim passes final gate"))
     steps.append(run(["aw", "final", "--session-id", TASK, "--task-id", TASK, "tests passed and pushed"],
                      repo, expect=1, label="unobserved push claim rejected"))
+    # The hardened backend is intentionally absent on this ephemeral Ubuntu
+    # runner. Verify that it rejects instead of borrowing weaker local proof.
+    steps.append(run(["aw", "task", "verify", TASK, "--hardened"], repo, expect=1,
+                     label="hardened verification fails without protected notary"))
     witnessed = evidence_summary(repo, TASK)
     llm = llm_policy_proof(llm_root)
+    claim_file = repo / ".agentwitness" / "llm-report.md"
+    claim_file.write_text("The automated tests passed.", encoding="utf-8")
+    notary_call = subprocess.run(
+        [sys.executable, str(llm_root / "agy.py"), "audit-report", str(claim_file),
+         "--repo-path", str(repo), "--test-profile", "python-full", "--enforce"],
+        cwd=str(llm_root), text=True, capture_output=True, timeout=20,
+    )
+    if notary_call.returncode == 0 or "Error connecting to Notary" not in notary_call.stdout:
+        raise RuntimeError("LLMAccountability CLI did not fail closed on missing protected notary")
+    steps.append({"step": "actual LLMAccountability agy.py CLI refuses unattested completion",
+                  "exit_code": notary_call.returncode, "expected_exit_code": 1})
+    llm["cli_invoked"] = True
+    llm["missing_notary_explicitly_rejected"] = True
     report = {
         "date_utc": datetime.now(timezone.utc).isoformat(),
         "repository_head": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=repo, text=True).strip(),
