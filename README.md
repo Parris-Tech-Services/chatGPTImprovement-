@@ -56,6 +56,13 @@ If verification cannot be performed, state **PARTIALLY COMPLETE** or **BLOCKED**
 - [Deep Research: peak AI-agent performance, evidence, evaluations and existing-stack reuse](research/DEEP_RESEARCH_BRIEF_AGENT_PEAK_PERFORMANCE_2026-10-29.md) — copy-ready independent research instructions, prior-work reconciliation, current external leads, falsifiable evaluation requirements and implementation priorities.
 - [What external teams actually did — published results and our countermeasures](research/EXTERNAL_AI_AGENT_PERFORMANCE_FINDINGS_2026-10-29.md) — first substantive external research pass; 15 interventions with source URLs, research quality limitations, actual code inspected, and three reproducible experiments.
 
+## Consolidated outstanding to-do list — 29 October 2026
+
+- **[52 specific backlog tasks with individual acceptance criteria](docs/MASTER_ACTION_BACKLOG_2026-10-29.md)** — 10 ownership tracks, priorities P0/P1/P2, dependencies, links to [issues #1–#10](https://github.com/Parris-Tech-Services/chatGPTImprovement-/issues) and clear blockers.
+- [CSV task register](docs/MASTER_ACTION_BACKLOG_2026-10-29.csv) — importable task IDs, owners, priority, acceptance, dependencies and matching GitHub issue numbers.
+- **19 P0 / 29 P1 / 4 P2** tasks. Functional ownership is assigned to systems and repositories; no GitHub person has been individually assigned and no external agent task has been launched.
+- Read the relevant existing source and work before implementing; missing tool access or prior-transcript coverage is an **open blocker**, not proof that a task is finished.
+
 ## Improvement sequence
 
 1. **Enforce evidence-backed completion and honest statuses immediately.**
