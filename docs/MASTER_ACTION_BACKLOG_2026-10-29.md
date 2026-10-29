@@ -3,7 +3,7 @@
 **Compiled:** 29 October 2026 (Australia/Sydney)  
 **Scope:** All outstanding action items surfaced in this ChatGPT improvement conversation, current research/PIP documents and directly inspected relevant repositories. This does **not** claim a comprehensive audit of every previous chat, all open projects or private machine state.
 
-**Status:** 52 specific items identified; **2 VERIFIED COMPLETE (G01, I02), 50 OPEN**. The G01 evidence is linked below; remaining underlying capabilities may exist, but their specific acceptance requirements are still unverified in this programme. Some underlying capabilities already exist; OPEN means the **specific acceptance evidence requested here has not been produced in this programme**. Existing features should be verified before new engineering work is started.
+**Status:** 52 specific items identified; **3 VERIFIED COMPLETE (G01, I02, S01), 49 OPEN**. The G01 evidence is linked below; remaining underlying capabilities may exist, but their specific acceptance requirements are still unverified in this programme. Some underlying capabilities already exist; OPEN means the **specific acceptance evidence requested here has not been produced in this programme**. Existing features should be verified before new engineering work is started.
 
 **Owner assignment:** Functional system/repository is assigned below, **not a GitHub user or an autonomous agent invocation**. No people were assigned or notified. Private review/supervisor work is role-named without exposing private repository URLs.
 
@@ -135,7 +135,8 @@
 
 **Functional owner:** All components (security gate)
 
-- [ ] **S01 · P0 · Codify approval gate for every consequential action.** Action: Explicit task-specific authority for email/send/forward/reply, paid API/spend, merge, deploy, system config or secret access; never treat broad goals as mail authorisation. **Done only when:** Synthetic negative tests prove no action occurs without scoped approval, including automatic retries/escalation. **Depends on:** —.
+- [x] **S01 · P0 · Codify approval gate for every consequential action.** Action: Explicit task-specific authority for email/send/forward/reply, paid API/spend, merge, deploy, system config or secret access; never treat broad goals as mail authorisation. **Done only when:** Synthetic negative tests prove no action occurs without scoped approval, including automatic retries/escalation. **Depends on:** —.
+  **Verified policy/test scope:** [S01 evidence](evidence/S01_2026-10-29.json), [PR #15](https://github.com/Parris-Tech-Services/chatGPTImprovement-/pull/15), [post-merge CI](https://github.com/Parris-Tech-Services/chatGPTImprovement-/actions/runs/40840980335), [witnessed test CI](https://github.com/Parris-Tech-Services/chatGPTImprovement-/actions/runs/40840980350). Production host/Gmail connector interception is NOT installed (I04/A02/Q04 remain open).
 - [ ] **S02 · P0 · Audit signing keys, attestations and unsafe test execution.** Action: Check generated keys, receipt history, public exposure, non-root runners, digest binding, injection, trust anchors and secret redaction. **Done only when:** Security review with evidence, key leak canary tests and remediation plan; no production key disclosure in report. **Depends on:** S01.
 - [ ] **S03 · P0 · Keep private-repo/chat evidence out of public improvement project.** Action: Restrict improvement repo to public-safe architecture, anonymised work IDs and aggregate metrics; keep raw chat logs and private evidence in authorised store. **Done only when:** Diff and secret/PII scan on every new public doc/issue; no private repo URLs, machine identity or conversation excerpts leak. **Depends on:** S01.
 

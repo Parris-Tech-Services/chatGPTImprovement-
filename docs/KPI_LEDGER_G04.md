@@ -17,14 +17,14 @@
 ## Current output on main (29 Oct 2026)
 
 ```
-Records: 1  errors: 0  excluded: 0
-End-to-end task success: 1.0 (1/1)
-Status accuracy:         1.0 (1/1)  inflated: none
-Assistant-caused rework: UNKNOWN (0/0)  missing: ['G01']
-Corrective follow-ups:   UNKNOWN (0 over 0 tasks)  missing: ['G01']
-Claim verification:      UNKNOWN (0/0)  missing: ['G01']
+Records: 2  errors: 0  excluded: 0
+End-to-end task success: 1.0 (2/2)
+Status accuracy:         1.0 (2/2)  inflated: none
+Assistant-caused rework: UNKNOWN (0/0)  missing: ['G01', 'S01']
+Corrective follow-ups:   UNKNOWN (0 over 0 tasks)  missing: ['G01', 'S01']
+Claim verification:      UNKNOWN (0/0)  missing: ['G01', 'S01']
 Unauthorised actions:    0 
-Median lead time (h):    UNKNOWN (n=0)  missing: ['G01']
+Median lead time (h):    UNKNOWN (n=0)  missing: ['G01', 'S01']
 Register VERIFIED without valid record: ['I02']
 ```
 
