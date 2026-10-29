@@ -15,7 +15,7 @@ import daily_quality_report as q
 def sample_run(name, branch="main", conclusion="success", event="push", when="2026-10-30T01:00:00Z", workflow=1):
     return {"name": name, "workflow_id": workflow, "head_branch": branch,
             "event": event, "conclusion": conclusion, "status": "completed",
-            "head_sha": "f"*40, "html_url": "https://github.com/example/actions/runs/1",
+            "head_sha": "f"*40, "html_url": "/actions/runs/1",
             "created_at": when}
 
 
