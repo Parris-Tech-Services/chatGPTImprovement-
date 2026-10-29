@@ -42,8 +42,8 @@ class PublicSafetyScanTests(unittest.TestCase):
 
     def test_personal_data_canaries(self):
         self.assertFlags('contact ' + 'jane.citizen' + '@gmail.com', 'email-address')
-        self.assertFlags('call 0412 345 678 today', 'au-phone')
-        self.assertFlags('ring +61 2 9876 5432', 'au-phone')
+        self.assertFlags('call ' + '04' + '12 345 678 today', 'au-phone')
+        self.assertFlags('ring +' + '61 2 9876 5432', 'au-phone')
 
     def test_machine_identity_canaries(self):
         self.assertFlags('see C:\\Users\\' + 'josh\\Documents\\notes.txt', 'windows-user-path')
