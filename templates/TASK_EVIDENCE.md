@@ -13,6 +13,16 @@
 - **Reason task eligible or excluded from pilot denominator:**
 - **Evidence location:** [secure internal reference; public links only where authorised]
 
+## Canonical policy and offline consistency check
+
+Follow [the G01 Definition of Done](../docs/DEFINITION_OF_DONE_V1.md). For substantive tasks, maintain an authorised, private JSON task record with `contract.criteria`, acceptance results, provenance-labelled external evidence IDs, a live criterion for user-facing changes, explicit permission references, remaining work and blockers. Before reporting completion, run:
+
+```bash
+python scripts/check_task_record.py path/to/record.json
+```
+
+**This is only a consistency check; a passing exit code does not authenticate evidence, permissions or user-facing success.** Prefer actually invoked AgentWitness anchored contracts/`aw final` and supported LLMAccountability recipes when reachable. For G01 in particular, require independent review or report the limitation. Do not mark `VERIFIED COMPLETE` on the strength of this record alone.
+
 ## Investigation
 
 - [ ] Read relevant existing project documentation and source
