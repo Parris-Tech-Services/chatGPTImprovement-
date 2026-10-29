@@ -6,6 +6,8 @@ on:
       - 'tests/**'
       - 'docs/ACTION_APPROVAL_POLICY_V1.md'
       - 'docs/DEFINITION_OF_DONE_V1.md'
+      - 'docs/evidence/**'
+      - 'docs/MASTER_ACTION_BACKLOG_2026-10-29.csv'
       - '.github/workflows/dod-policy.yml'
   pull_request:
     paths:
@@ -13,6 +15,8 @@ on:
       - 'tests/**'
       - 'docs/ACTION_APPROVAL_POLICY_V1.md'
       - 'docs/DEFINITION_OF_DONE_V1.md'
+      - 'docs/evidence/**'
+      - 'docs/MASTER_ACTION_BACKLOG_2026-10-29.csv'
       - '.github/workflows/dod-policy.yml'
 jobs:
   test:
@@ -26,7 +30,13 @@ jobs:
           python-version: '3.12'
       - name: Run negative acceptance tests
         run: python -m unittest discover -s tests -v
-      - name: KPI ledger report (informational until every VERIFIED register entry has a valid record)
-        run: python scripts/kpi_ledger.py || true
+      - name: Reject malformed task evidence, self-reported DONE and drifted contracts
+        shell: bash
+        run: |
+          for record in docs/evidence/*.json; do
+            python scripts/check_task_record.py "$record"
+          done
+      - name: Fail if a VERIFIED claim lacks a valid record or omits authorisation
+        run: python scripts/kpi_ledger.py
       - name: Syntax compilation
         run: python -m compileall -q scripts tests
