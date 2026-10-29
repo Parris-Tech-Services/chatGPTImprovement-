@@ -54,9 +54,8 @@ IDENTITY_RULES = [
 TRANSCRIPT_RULES = [
     ("transcript-turn", re.compile(r"(?im)^\s*(?:\*\*)?(?:You said|ChatGPT said|User|Assistant|Human)(?:\*\*)?\s*:\s*\S")),
 ]
-GITHUB_REPO = re.compile(r"https?://github\.com/([A-Za-z0-9-]+)/([A-Za-z0-9._-]+?)(?:\.git)?(?=[/#?)\]\s\"'`>,]|$)")
+GITHUB_REPO = re.compile(r"(?:https?://(?:www\.)?github\.com/|git@github\.com:|ssh://git@github\.com/)([A-Za-z0-9-]+)/([A-Za-z0-9._-]+?)(?:\.git)?(?=[/#?)\]\s\"'`>,:]|$)", re.IGNORECASE)
 EMAIL_OK = re.compile(r"(?i)@(?:users\.noreply\.github\.com|noreply\.[a-z.]+|example\.(?:com|org|net|test)|anthropic\.com)$|^noreply@|^git@")
-TEXT_SUFFIXES = {".md", ".txt", ".json", ".csv", ".py", ".yml", ".yaml", ".toml", ".js", ".ts", ".sh", ".html", ""}
 
 
 def redact(value: str) -> str:
@@ -73,6 +72,7 @@ def load_allowlist() -> dict:
         "public_repos": {r.lower() for r in data.get("public_repos", [])},
         "emails": {e.lower() for e in data.get("emails", [])},
         "paths": set(data.get("paths", [])),
+        "binary_paths": set(data.get("binary_paths", [])),
     }
 
 
@@ -103,11 +103,13 @@ def repo_visibility(owner_repo: str, offline: bool) -> str:
     return result
 
 
-def scan_text(text: str, where: str, allow: dict, offline: bool, notes: list[str] | None = None) -> list[str]:
+def scan_text(text: str, where: str, allow: dict, offline: bool, notes: list[str] | None = None, allow_inline: bool = False) -> list[str]:
+    """allow_inline honours `public-safety: allow` markers; only for reviewed repository files,
+    never for issue, PR or review text that anyone can write."""
     findings: list[str] = []
     notes = notes if notes is not None else findings
     for lineno, line in enumerate(text.splitlines(), 1):
-        if "public-safety: allow" in line:
+        if allow_inline and "public-safety: allow" in line:
             continue
         loc = f"{where}:{lineno}"
         for rule, pat in SECRET_RULES:
@@ -138,7 +140,7 @@ def scan_text(text: str, where: str, allow: dict, offline: bool, notes: list[str
             if vis == "not-public":
                 findings.append(f"{loc}: private-repo-link {owner}/… is not publicly visible")
             elif vis == "unknown":
-                notes.append(f"{loc}: unverified-repo-link {full} (visibility could not be checked)")
+                notes.append(f"{loc}: unverified-repo-link {owner}/… (visibility could not be checked)")
     return findings
 
 
@@ -164,15 +166,16 @@ def main(argv: list[str] | None = None) -> int:
         scanned = 1
     else:
         for p in args.paths or tracked_files():
-            if p.resolve() == ALLOWLIST.resolve() or p.suffix.lower() not in TEXT_SUFFIXES or not p.is_file():
+            if p.resolve() == ALLOWLIST.resolve() or not p.is_file():
                 continue
+            rel = p.resolve().relative_to(ROOT) if p.resolve().is_relative_to(ROOT) else p
             try:
                 text = p.read_text(encoding="utf-8")
             except UnicodeDecodeError:
-                findings.append(f"{p}: binary or non-UTF-8 file in public repo (review manually)")
+                if str(rel) not in allow["binary_paths"]:
+                    findings.append(f"{rel}: binary or non-UTF-8 file; review it and list it under binary_paths in the allowlist")
                 continue
-            rel = p.resolve().relative_to(ROOT) if p.resolve().is_relative_to(ROOT) else p
-            findings += scan_text(text, str(rel), allow, args.offline, sink)
+            findings += scan_text(text, str(rel), allow, args.offline, sink, allow_inline=True)
             scanned += 1
     for f in findings:
         print("FINDING " + f)

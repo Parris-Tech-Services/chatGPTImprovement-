@@ -5,17 +5,23 @@ name: Public-safety scan (S03)
 on:
   push:
   pull_request:
+    types: [opened, synchronize, reopened, edited]
   issues:
     types: [opened, edited]
   issue_comment:
+    types: [created, edited]
+  pull_request_review:
+    types: [submitted, edited]
+  pull_request_review_comment:
     types: [created, edited]
   workflow_dispatch:
 permissions:
   contents: read
   issues: read
+  pull-requests: read
 jobs:
   files:
-    if: github.event_name == 'push' || github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.action != 'edited')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -34,7 +40,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python scripts/scan_issue_bodies.py "${{ github.repository }}"
   body:
-    if: github.event_name == 'issues' || github.event_name == 'issue_comment'
+    if: github.event_name != 'push' && github.event_name != 'workflow_dispatch' && (github.event_name != 'pull_request' || github.event.action == 'edited' || github.event.action == 'opened')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -44,8 +50,8 @@ jobs:
       - name: Scan the new or edited text
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TITLE: ${{ github.event.issue.title }}
-          BODY: ${{ github.event_name == 'issue_comment' && github.event.comment.body || github.event.issue.body }}
+          TITLE: ${{ github.event.issue.title || github.event.pull_request.title }}
+          BODY: ${{ github.event.comment.body || github.event.review.body || github.event.issue.body || github.event.pull_request.body }}
         run: |
           printf '%s\n%s\n' "$TITLE" "$BODY" > "$RUNNER_TEMP/body.txt"
           python scripts/public_safety_scan.py --require-visibility --text-file "$RUNNER_TEMP/body.txt"

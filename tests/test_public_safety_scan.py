@@ -70,8 +70,32 @@ class PublicSafetyScanTests(unittest.TestCase):
                  'The user said the build was green.')
         self.assertEqual(self.scan(clean), [])
 
-    def test_inline_allow_marker(self):
-        self.assertEqual(self.scan('fixture ' + AWS + '  <!-- public-safety: allow -->'), [])
+    def test_inline_allow_marker_only_for_repository_files(self):
+        line = 'fixture ' + AWS + '  <!-- public-safety: allow -->'
+        self.assertEqual(pss.scan_text(line, 'f.md', ALLOW, False, allow_inline=True), [])
+        self.assertTrue(self.scan(line), 'issue/PR/review text must not be able to exempt itself')
+
+    def test_capitalised_host_and_ssh_links_are_checked(self):
+        for link in ['https://' + 'GitHub.com/acme/secret-tool', 'git' + '@github.com:acme/secret-tool.git',
+                     'ssh://git' + '@github.com/acme/secret-tool.git', 'https://www.' + 'github.com/acme/secret-tool/issues']:
+            self.assertFlags('see ' + link, 'private-repo-link')
+
+    def test_unknown_repo_note_is_redacted(self):
+        notes = []
+        self.scan('see ' + GHURL + 'acme/unknown', notes)
+        self.assertFalse(any('acme/unknown' in n for n in notes), notes)
+
+    def test_binary_files_need_review(self):
+        import tempfile, os
+        with tempfile.TemporaryDirectory() as d:
+            b = Path(d) / 'blob.bin'; b.write_bytes(bytes([0xff, 0xfe, 0x00, 0x81]))
+            env = Path(d) / '.env'; env.write_text('API_KEY = "' + 'Zx9' * 5 + '"\n')
+            out = io.StringIO()
+            with redirect_stdout(out):
+                code = pss.main(['--offline', str(b), str(env)])
+            self.assertEqual(code, 1)
+            self.assertIn('binary or non-UTF-8', out.getvalue())
+            self.assertIn('assigned-secret', out.getvalue(), 'files with any extension are scanned')
 
     def test_repository_is_clean_offline(self):
         pss.repo_visibility = self._vis
