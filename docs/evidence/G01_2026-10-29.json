@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "task_id": "G01",
+  "task_type": "documentation",
+  "user_facing": false,
+  "actor": "ChatGPT",
+  "status": "VERIFIED COMPLETE",
+  "contract": {
+    "user_outcome": "Document and review canonical completion statuses and ensure a user-facing task lacking live acceptance cannot be called verified complete",
+    "criteria": [
+      {
+        "id": "AC-1",
+        "kind": "artifact",
+        "description": "Canonical status and Definition of Done policy published on main"
+      },
+      {
+        "id": "AC-2",
+        "kind": "test",
+        "description": "Negative and positive status acceptance tests pass on exact merged commit"
+      },
+      {
+        "id": "AC-3",
+        "kind": "review",
+        "description": "Independent PR review received and all valid findings addressed"
+      },
+      {
+        "id": "AC-4",
+        "kind": "artifact",
+        "description": "PIP and evidence template updated to reference canonical policy"
+      }
+    ],
+    "digest_sha256": "7b532167003865a5527b5435b6607c05193dc636a73cb4e6e8590c40213f4304"
+  },
+  "results": [
+    {
+      "criterion_id": "AC-1",
+      "outcome": "PASS",
+      "evidence_ids": [
+        "E-policy"
+      ]
+    },
+    {
+      "criterion_id": "AC-2",
+      "outcome": "PASS",
+      "evidence_ids": [
+        "E-ci"
+      ]
+    },
+    {
+      "criterion_id": "AC-3",
+      "outcome": "PASS",
+      "evidence_ids": [
+        "E-greptile",
+        "E-pr"
+      ]
+    },
+    {
+      "criterion_id": "AC-4",
+      "outcome": "PASS",
+      "evidence_ids": [
+        "E-pip",
+        "E-template"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "E-policy",
+      "reference": "https://github.com/Parris-Tech-Services/chatGPTImprovement-/blob/main/docs/DEFINITION_OF_DONE_V1.md",
+      "kind": "artifact",
+      "provenance": "external_observed",
+      "observed_by": "GitHub contents API"
+    },
+    {
+      "id": "E-ci",
+      "reference": "https://github.com/Parris-Tech-Services/chatGPTImprovement-/actions/runs/40836061002",
+      "kind": "test",
+      "provenance": "external_observed",
+      "observed_by": "GitHub Actions"
+    },
+    {
+      "id": "E-greptile",
+      "reference": "https://github.com/Parris-Tech-Services/chatGPTImprovement-/pull/11",
+      "kind": "review",
+      "provenance": "external_observed",
+      "observed_by": "Greptile"
+    },
+    {
+      "id": "E-pr",
+      "reference": "https://github.com/Parris-Tech-Services/chatGPTImprovement-/pull/11",
+      "kind": "review",
+      "provenance": "external_observed",
+      "observed_by": "GitHub PR API"
+    },
+    {
+      "id": "E-pip",
+      "reference": "https://github.com/Parris-Tech-Services/chatGPTImprovement-/blob/main/docs/PIP_001_SENIOR_EXECUTION.md",
+      "kind": "artifact",
+      "provenance": "external_observed",
+      "observed_by": "GitHub contents API"
+    },
+    {
+      "id": "E-template",
+      "reference": "https://github.com/Parris-Tech-Services/chatGPTImprovement-/blob/main/templates/TASK_EVIDENCE.md",
+      "kind": "artifact",
+      "provenance": "external_observed",
+      "observed_by": "GitHub contents API"
+    }
+  ],
+  "external_actions": [
+    {
+      "action": "merge",
+      "performed": true,
+      "approval_reference": "User request in this conversation to implement task 1/52 and push the result to the existing improvement repo",
+      "approval_scope": "merge"
+    }
+  ],
+  "remaining_work": [],
+  "blocker": null
+}
