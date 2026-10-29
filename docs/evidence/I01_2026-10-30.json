@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "task_id": "I01",
+  "task_type": "software",
+  "user_facing": true,
+  "actor": "ChatGPT implementer",
+  "status": "VERIFIED COMPLETE",
+  "contract": {
+    "user_outcome": "Prove one real witnessed FaithHub app task end to end: frozen contract, real tests and final claim gate, exact Git SHA and a real publicly deployed Chromium user journey.",
+    "criteria": [
+      {
+        "id": "I01-1",
+        "kind": "artifact",
+        "description": "Integrate pinned real AgentWitness task contract and automatic PR/main workflows in actual FaithHub main"
+      },
+      {
+        "id": "I01-2",
+        "kind": "test",
+        "description": "Run broker-witnessed real FaithHub tests, mobile/desktop Chromium and production build at merged SHA, with negative pre-evidence gate and evidenced final gate"
+      },
+      {
+        "id": "I01-3",
+        "kind": "live",
+        "description": "Successful GitHub Pages deployment of exact merged SHA independently validated by live public browser interactions and SHA marker"
+      }
+    ],
+    "digest_sha256": "7375f8814792cc5dda87a5ea1413bc123471d44e98a7aef5742c6183a452465b"
+  },
+  "results": [
+    {
+      "criterion_id": "I01-1",
+      "outcome": "PASS",
+      "evidence_ids": [
+        "E-faithhub-gate"
+      ]
+    },
+    {
+      "criterion_id": "I01-2",
+      "outcome": "PASS",
+      "evidence_ids": [
+        "E-witnessed-ci"
+      ]
+    },
+    {
+      "criterion_id": "I01-3",
+      "outcome": "PASS",
+      "evidence_ids": [
+        "E-live-browser",
+        "E-deploy"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "E-faithhub-gate",
+      "kind": "artifact",
+      "reference": "https://github.com/Parris-Tech-Services/FaithHub/blob/main/.github/workflows/agentwitness-acceptance.yml",
+      "provenance": "external_observed",
+      "observed_by": "GitHub contents API"
+    },
+    {
+      "id": "E-witnessed-ci",
+      "kind": "test",
+      "reference": "https://github.com/Parris-Tech-Services/FaithHub/actions/runs/40960016150",
+      "provenance": "broker_witnessed",
+      "observed_by": "AgentWitness runner and GitHub Actions"
+    },
+    {
+      "id": "E-live-browser",
+      "kind": "live",
+      "reference": "https://github.com/Parris-Tech-Services/FaithHub/actions/runs/40960069822",
+      "provenance": "external_observed",
+      "observed_by": "Independent GitHub Actions Chromium browser"
+    },
+    {
+      "id": "E-deploy",
+      "kind": "deployment",
+      "reference": "https://github.com/Parris-Tech-Services/FaithHub/actions/runs/40960016110",
+      "provenance": "external_observed",
+      "observed_by": "GitHub Pages Actions"
+    }
+  ],
+  "external_actions": [
+    {
+      "action": "merge",
+      "performed": true,
+      "approval_reference": "User authorised completing and merging real project improvements in this conversation",
+      "approval_scope": "merge"
+    }
+  ],
+  "remaining_work": [],
+  "blocker": null
+}
