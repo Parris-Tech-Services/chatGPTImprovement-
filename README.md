@@ -51,6 +51,10 @@ If verification cannot be performed, state **PARTIALLY COMPLETE** or **BLOCKED**
 
 **First engineering step:** prove that the actual workflow *invokes* existing evidence gates and tests an actual user outcome. Publishing a process document does **not** configure ChatGPT or its hosted tools to use these local CLIs.
 
+## Deep research briefing
+
+- [Deep Research: peak AI-agent performance, evidence, evaluations and existing-stack reuse](research/DEEP_RESEARCH_BRIEF_AGENT_PEAK_PERFORMANCE_2026-10-29.md) — copy-ready independent research instructions, prior-work reconciliation, current external leads, falsifiable evaluation requirements and implementation priorities.
+
 ## Improvement sequence
 
 1. **Enforce evidence-backed completion and honest statuses immediately.**
