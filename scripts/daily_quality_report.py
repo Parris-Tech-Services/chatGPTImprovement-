@@ -55,7 +55,7 @@ def check_public_page(url: str) -> dict:
         req = urllib.request.Request(url, headers={"User-Agent": "FaithHubHealth/1.0"})
         with urllib.request.urlopen(req, timeout=18) as resp:
             body = resp.read(MAX_HTTP_BODY).decode("utf-8", errors="replace")
-            ok = resp.status == 200 and ("FaithHub" in body or "FaithHub" in resp.url)
+            ok = resp.status == 200 and ("FaithHub" in body or "Faith Hub" in body)
             return {"url": url, "state": "PASS" if ok else "FAIL",
                     "http_status": resp.status, "body_checked": True,
                     "meaning": "HTTP/HTML marker only; NOT interactive browser acceptance"}
