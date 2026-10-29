@@ -2,14 +2,14 @@ name: Definition of Done policy tests
 on:
   push:
     paths:
-      - 'scripts/check_task_record.py'
-      - 'tests/test_status_policy.py'
+      - 'scripts/**'
+      - 'tests/**'
       - 'docs/DEFINITION_OF_DONE_V1.md'
       - '.github/workflows/dod-policy.yml'
   pull_request:
     paths:
-      - 'scripts/check_task_record.py'
-      - 'tests/test_status_policy.py'
+      - 'scripts/**'
+      - 'tests/**'
       - 'docs/DEFINITION_OF_DONE_V1.md'
       - '.github/workflows/dod-policy.yml'
 jobs:
@@ -24,5 +24,7 @@ jobs:
           python-version: '3.12'
       - name: Run negative acceptance tests
         run: python -m unittest discover -s tests -v
+      - name: KPI ledger report (informational until every VERIFIED register entry has a valid record)
+        run: python scripts/kpi_ledger.py || true
       - name: Syntax compilation
         run: python -m compileall -q scripts tests
