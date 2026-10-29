@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "task_id": "S03",
+  "task_type": "software",
+  "user_facing": false,
+  "actor": "ChatGPT implementer",
+  "status": "VERIFIED COMPLETE",
+  "contract": {
+    "user_outcome": "Introduce a public-repository privacy scanner with GitHub Actions file, PR, issue, review and comment checks plus synthetic leakage canaries",
+    "criteria": [
+      {
+        "id": "S03-A",
+        "kind": "artifact",
+        "description": "Public safety scan code and workflow merged into main with private source excluded"
+      },
+      {
+        "id": "S03-T",
+        "kind": "test",
+        "description": "Post-merge GitHub Actions file and discussion scan runs with zero finding and adversarial canaries pass"
+      },
+      {
+        "id": "S03-W",
+        "kind": "test",
+        "description": "Existing AgentWitness brokered integration CI passes for exact merged SHA"
+      },
+      {
+        "id": "S03-R",
+        "kind": "review",
+        "description": "Independent Greptile final review has no blocking findings"
+      }
+    ],
+    "digest_sha256": "3d4ff90d540af25e0c6b52d1826573c89a190d4b0cde9908e59fe2de90453c08"
+  },
+  "results": [
+    {
+      "criterion_id": "S03-A",
+      "outcome": "PASS",
+      "evidence_ids": [
+        "s03-workflow"
+      ]
+    },
+    {
+      "criterion_id": "S03-T",
+      "outcome": "PASS",
+      "evidence_ids": [
+        "s03-ci"
+      ]
+    },
+    {
+      "criterion_id": "S03-W",
+      "outcome": "PASS",
+      "evidence_ids": [
+        "s03-aw"
+      ]
+    },
+    {
+      "criterion_id": "S03-R",
+      "outcome": "PASS",
+      "evidence_ids": [
+        "s03-review"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "s03-workflow",
+      "kind": "artifact",
+      "reference": "https://github.com/Parris-Tech-Services/chatGPTImprovement-/blob/main/.github/workflows/public-safety.yml",
+      "provenance": "external_observed",
+      "observed_by": "GitHub contents API"
+    },
+    {
+      "id": "s03-ci",
+      "kind": "test",
+      "reference": "https://github.com/Parris-Tech-Services/chatGPTImprovement-/actions/runs/40843416928",
+      "provenance": "external_observed",
+      "observed_by": "GitHub Actions"
+    },
+    {
+      "id": "s03-aw",
+      "kind": "test",
+      "reference": "https://github.com/Parris-Tech-Services/chatGPTImprovement-/actions/runs/40843416982",
+      "provenance": "external_observed",
+      "observed_by": "GitHub Actions + AgentWitness"
+    },
+    {
+      "id": "s03-review",
+      "kind": "review",
+      "reference": "https://github.com/Parris-Tech-Services/chatGPTImprovement-/pull/13",
+      "provenance": "external_observed",
+      "observed_by": "Greptile review 36486533 on prior commit e90c1ec"
+    }
+  ],
+  "external_actions": [
+    {
+      "action": "merge",
+      "performed": true,
+      "approval_reference": "User request to continue approved GitHub work and merge verified improvements in this conversation",
+      "approval_scope": "merge"
+    }
+  ],
+  "remaining_work": [],
+  "blocker": null
+}
