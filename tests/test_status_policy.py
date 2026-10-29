@@ -91,7 +91,7 @@ class StatusPolicyTests(unittest.TestCase):
         self.assertBad(data,'requires independent evidence')
     def test_invalid_utf8_returns_input_error(self):
         with tempfile.TemporaryDirectory() as d:
-            p=Path(d)/'bad.json';p.write_bytes(b'\\xff')
+            p=Path(d)/'bad.json';p.write_bytes(b'\xff')
             proc=subprocess.run([sys.executable,str(ROOT/'scripts/check_task_record.py'),str(p)],capture_output=True,text=True)
             self.assertEqual(proc.returncode,2,proc.stdout)
             self.assertIn('INVALID RECORD',proc.stderr)
