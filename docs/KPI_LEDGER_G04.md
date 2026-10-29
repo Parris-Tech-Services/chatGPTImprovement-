@@ -14,7 +14,9 @@
 
 **Adversarial tests:** [`tests/test_kpi_ledger.py`](../tests/test_kpi_ledger.py) has 16 cases. They cover inflated or self-reported success, tampered scope, reasonless exclusion, unknown eligibility, duplicates, missing data, impossible claim counts, claims from invalid records, mixed-timezone timestamps, wrong-scope or blank approvals, malformed record files, per-task traceability, unapproved actions and unsupported register claims.
 
-## Current output on main (29 Oct 2026)
+## Historical prototype output — superseded, not current
+
+The following is a **historical first-pass example** from before additional evidence records were merged into `main`. It must **not** be presented as today's measured performance, nor extrapolated into 50–100 chats. A scheduled report should execute the ledger against current records and explicitly list unknowns.
 
 ```
 Records: 2  errors: 0  excluded: 0
@@ -31,3 +33,12 @@ Register VERIFIED without valid record: ['I02']
 **Finding:** the register lists **I02** as `VERIFIED COMPLETE`, but its evidence is a Markdown note ([I02 record](evidence/I02_2026-10-29.md)), not a machine-checkable record. Until a valid `I02_*.json` with independent evidence exists, the ledger reports I02 as an unsupported claim. CI runs the ledger as informational for now, so main isn't blocked.
 
 **Status of G04:** the mechanism and adversarial tests are done. The backlog acceptance also depends on **G03** (a real baseline), so G04 stays **PARTIALLY COMPLETE** until real task records with `kpi` data flow through it.
+
+
+## Review update — preventing KPI inflation
+
+Following independent review, the script discards **unvalidated records** from corrective-followup averages, instead of letting a fabricated zero improve the result. It also treats invalid UTF-8 evidence files as individual unreadable records, preserving the rest of the report. Both failures have explicit regression tests.
+
+Do not calculate real task-success rates from this sparse, self-selected engineering record sample: `G02/G03` must establish the audited cohort and independent outcome checks first. The primary KPI `end_to_end_task_success` currently measures **only the submitted records with accepted eligibility**, not ChatGPT's actual daily population of user requests.
+
+For operational daily checks, combine this cautious evidence ledger with **live repository CI status** and **real application health**, explicitly reporting deployment and user-interaction verification separately.
