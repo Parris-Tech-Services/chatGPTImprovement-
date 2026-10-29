@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "task_id": "L07",
+  "task_type": "software",
+  "user_facing": false,
+  "actor": "ChatGPT implementer",
+  "status": "VERIFIED COMPLETE",
+  "contract": {
+    "user_outcome": "Eliminate duplicate semantic completion claims from overlapping LLMAccountability V2 regexes without changing established claim IDs",
+    "criteria": [
+      {
+        "id": "L07-A",
+        "kind": "artifact",
+        "description": "Claim extractor correction merged into LLMAccountability main"
+      },
+      {
+        "id": "L07-T",
+        "kind": "test",
+        "description": "Post-merge regression CI proves overlap deduplication and existing claim ID stability"
+      },
+      {
+        "id": "L07-R",
+        "kind": "review",
+        "description": "Independent Greptile review on final PR head confirms no blocking findings"
+      }
+    ],
+    "digest_sha256": "4cc18f1da45d0d559bb69a972d168408933dd10ac8f30b21735d6c63fad882cb"
+  },
+  "results": [
+    {
+      "criterion_id": "L07-A",
+      "outcome": "PASS",
+      "evidence_ids": [
+        "l07-artifact"
+      ]
+    },
+    {
+      "criterion_id": "L07-T",
+      "outcome": "PASS",
+      "evidence_ids": [
+        "l07-ci"
+      ]
+    },
+    {
+      "criterion_id": "L07-R",
+      "outcome": "PASS",
+      "evidence_ids": [
+        "l07-review"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "l07-artifact",
+      "kind": "artifact",
+      "reference": "https://github.com/Parris-Tech-Services/LLMAccountability/blob/main/v2/parsers/claim_extractor.py",
+      "provenance": "external_observed",
+      "observed_by": "GitHub contents API"
+    },
+    {
+      "id": "l07-ci",
+      "kind": "test",
+      "reference": "https://github.com/Parris-Tech-Services/LLMAccountability/actions/runs/40844485710",
+      "provenance": "external_observed",
+      "observed_by": "GitHub Actions"
+    },
+    {
+      "id": "l07-review",
+      "kind": "review",
+      "reference": "https://github.com/Parris-Tech-Services/LLMAccountability/pull/1",
+      "provenance": "external_observed",
+      "observed_by": "Greptile second review on final commit 6a9c55e"
+    }
+  ],
+  "external_actions": [
+    {
+      "action": "merge",
+      "performed": true,
+      "approval_reference": "User request to continue all verified engineering tasks in current conversation",
+      "approval_scope": "merge"
+    }
+  ],
+  "remaining_work": [],
+  "blocker": null
+}
