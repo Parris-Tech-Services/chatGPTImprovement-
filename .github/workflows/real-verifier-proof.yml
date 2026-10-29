@@ -1,0 +1,70 @@
+name: Actual AgentWitness + LLMAccountability integration proof
+
+on:
+  push:
+    paths:
+      - 'scripts/verify_agent_stack_ci.py'
+      - 'tests/**'
+      - 'scripts/check_task_record.py'
+      - '.github/workflows/real-verifier-proof.yml'
+  pull_request:
+    paths:
+      - 'scripts/verify_agent_stack_ci.py'
+      - 'tests/**'
+      - 'scripts/check_task_record.py'
+      - '.github/workflows/real-verifier-proof.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  real-verifier-smoke:
+    name: Ephemeral witnessed execution and negative gates
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PYTHONUNBUFFERED: "1"
+      PIP_DISABLE_PIP_VERSION_CHECK: "1"
+    steps:
+      - name: Checkout governed target repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Checkout pinned AgentWitness implementation
+        uses: actions/checkout@v4
+        with:
+          repository: Parris-Tech-Services/AgentCheck
+          ref: 4d7746d664e4c2d75e64a8436df0bc9b7c9dfc9e
+          path: .external_verifiers/agentcheck
+          persist-credentials: false
+      - name: Checkout pinned LLMAccountability implementation
+        uses: actions/checkout@v4
+        with:
+          repository: Parris-Tech-Services/LLMAccountability
+          ref: 881ef0cdd8da3a3bd025bdc78ed8e00cef602ad8
+          path: .external_verifiers/llmaccountability
+          persist-credentials: false
+      - name: Prevent vendored dependencies from joining target test scope
+        shell: bash
+        run: |
+          echo '.external_verifiers/' >> .git/info/exclude
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install actual AgentWitness CLI (no production credentials)
+        run: |
+          python -m pip install -e .external_verifiers/agentcheck pytest
+          aw --help
+      - name: Run real witnessed acceptance and LLM policy invocation
+        shell: bash
+        run: |
+          python scripts/verify_agent_stack_ci.py --repo "$GITHUB_WORKSPACE" --llm-source "$GITHUB_WORKSPACE/.external_verifiers/llmaccountability" --report "$RUNNER_TEMP/verification-proof.json"
+      - name: Publish redacted summary, never signing keys or ledger
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: verifier-proof-${{ github.run_id }}
+          path: ${{ runner.temp }}/verification-proof.json
+          if-no-files-found: ignore
+          retention-days: 7
