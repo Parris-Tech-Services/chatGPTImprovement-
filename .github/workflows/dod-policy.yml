@@ -4,12 +4,18 @@ on:
     paths:
       - 'scripts/check_task_record.py'
       - 'tests/test_status_policy.py'
+      - 'scripts/action_authority.py'
+      - 'tests/test_action_authority.py'
+      - 'docs/ACTION_APPROVAL_POLICY_V1.md'
       - 'docs/DEFINITION_OF_DONE_V1.md'
       - '.github/workflows/dod-policy.yml'
   pull_request:
     paths:
       - 'scripts/check_task_record.py'
       - 'tests/test_status_policy.py'
+      - 'scripts/action_authority.py'
+      - 'tests/test_action_authority.py'
+      - 'docs/ACTION_APPROVAL_POLICY_V1.md'
       - 'docs/DEFINITION_OF_DONE_V1.md'
       - '.github/workflows/dod-policy.yml'
 jobs:
