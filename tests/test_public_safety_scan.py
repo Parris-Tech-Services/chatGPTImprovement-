@@ -16,6 +16,7 @@ GH = 'ghp_' + 'A1b2C3d4E5f6G7h8I9j0K1l2M3n4O5p6Q7r8'
 AWS = 'AKIA' + 'ABCDEFGHIJKLMNOP'
 ANT = 'sk-ant-' + 'api03-' + 'x' * 30
 KEY = '-----BEGIN ' + 'RSA PRIVATE KEY-----'
+GHURL = 'https://' + 'github.com/'   # split so fixture links are not real links in this file
 
 
 class PublicSafetyScanTests(unittest.TestCase):
@@ -55,17 +56,17 @@ class PublicSafetyScanTests(unittest.TestCase):
         self.assertFlags('**ChatGPT said:** done, all tests pass', 'transcript-turn')
 
     def test_private_repo_link_fails_and_unknown_follows_mode(self):
-        self.assertFlags('see https://github.com/acme/secret-tool/pull/3', 'private-repo-link')
+        self.assertFlags('see ' + GHURL + 'acme/secret-tool/pull/3', 'private-repo-link')
         notes = []
-        self.assertEqual(self.scan('see https://github.com/acme/unknown', notes), [])
+        self.assertEqual(self.scan('see ' + GHURL + 'acme/unknown', notes), [])
         self.assertTrue(any('unverified-repo-link' in n for n in notes))
-        self.assertTrue(any('unverified-repo-link' in f for f in self.scan('see https://github.com/acme/unknown')),
+        self.assertTrue(any('unverified-repo-link' in f for f in self.scan('see ' + GHURL + 'acme/unknown')),
                         'unknown visibility must fail in strict (CI) mode')
 
     def test_clean_public_text_passes(self):
         clean = ('Use noreply@anthropic.com and git@github.com:example-org/public-repo.git.\n'
                  'Runner path /home/runner/work and placeholder C:\\Users\\<you>\\repo.\n'
-                 'Version 0.4.12345678 and https://github.com/example-org/public-repo/issues/1.\n'
+                 'Version 0.4.12345678 and ' + GHURL + 'example-org/public-repo/issues/1.\n'
                  'The user said the build was green.')
         self.assertEqual(self.scan(clean), [])
 
@@ -73,6 +74,7 @@ class PublicSafetyScanTests(unittest.TestCase):
         self.assertEqual(self.scan('fixture ' + AWS + '  <!-- public-safety: allow -->'), [])
 
     def test_repository_is_clean_offline(self):
+        pss.repo_visibility = self._vis
         out = io.StringIO()
         with redirect_stdout(out):
             code = pss.main(['--offline'])
