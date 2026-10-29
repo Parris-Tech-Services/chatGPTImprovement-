@@ -1,0 +1,51 @@
+name: Public-safety scan (S03)
+# Every push, PR, issue and comment in this PUBLIC repository is scanned for
+# credentials, personal data, machine identity, raw chat transcripts and links
+# to repositories that are not publicly visible. Pattern scan only.
+on:
+  push:
+  pull_request:
+  issues:
+    types: [opened, edited]
+  issue_comment:
+    types: [created, edited]
+  workflow_dispatch:
+permissions:
+  contents: read
+  issues: read
+jobs:
+  files:
+    if: github.event_name == 'push' || github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Canary tests
+        run: python -m unittest tests.test_public_safety_scan -v
+      - name: Scan every tracked file
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/public_safety_scan.py --require-visibility
+      - name: Scan all issue and comment bodies
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/scan_issue_bodies.py "${{ github.repository }}"
+  body:
+    if: github.event_name == 'issues' || github.event_name == 'issue_comment'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Scan the new or edited text
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TITLE: ${{ github.event.issue.title }}
+          BODY: ${{ github.event_name == 'issue_comment' && github.event.comment.body || github.event.issue.body }}
+        run: |
+          printf '%s\n%s\n' "$TITLE" "$BODY" > "$RUNNER_TEMP/body.txt"
+          python scripts/public_safety_scan.py --require-visibility --text-file "$RUNNER_TEMP/body.txt"
