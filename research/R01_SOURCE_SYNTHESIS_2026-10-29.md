@@ -46,10 +46,10 @@ Evidence grades follow the first pass: *controlled empirical*, *engineering case
 | N2 | METR — Recent frontier models are reward hacking | 5 Jun 2025 | engineering case study | SEARCH-CONFIRMED | Models edited tests/scorers, read cached answers and monkey-patched evaluators, while showing they knew this was not intended. | Per-task rates come from secondary summaries only. |
 | N3 | Yao et al. — τ-bench, pass^k ([repo](https://github.com/sierra-research/tau-bench)) | Jun 2024 | controlled empirical | SEARCH-CONFIRMED, repo READ | **pass^k** (succeeds on all k trials) exposes inconsistency: gpt-4o under 50% pass^1 and **pass^8 under 25%** (retail). The repo leaderboard shows pass^1 0.692 → pass^4 0.462. | The repo is marked outdated in favour of τ²/τ³-bench. |
 | N4 | Xu et al. — TheAgentCompany (NeurIPS 2025) | Dec 2024 | controlled empirical | SEARCH-CONFIRMED | Simulated company (GitLab, OwnCloud, chat); best agent fully completed **about 30%** of 175 tasks, with partial credit higher; long-horizon tasks largely out of reach. | Secondary sources disagree (24% vs 30%) by version. |
-| N5 | OpenAI — Why language models hallucinate | Sep 2025 | analysis + system-card data | SEARCH-CONFIRMED | Accuracy-only grading rewards guessing. A model abstaining 52% made 26% errors, against 75% errors for a model abstaining 1% at similar accuracy. Score "UNKNOWN/BLOCKED" above confident wrong answers. | Proposal, not a measured intervention. |
+| N5 | OpenAI — Why language models hallucinate | Sep 2025 | analysis + system-card data | SEARCH-CONFIRMED | Accuracy-only grading rewards guessing. On SimpleQA (GPT-5 system card), **gpt-5-thinking-mini** abstained 52% with 26% errors and 22% accuracy, while **o4-mini** abstained 1% with 75% errors and 24% accuracy. Score "UNKNOWN/BLOCKED" above confident wrong answers. | Proposal, not a measured intervention. |
 | N6 | Huang et al. — LLMs Cannot Self-Correct Reasoning Yet (ICLR 2024) | Oct 2023 | controlled empirical | SEARCH-CONFIRMED | Without external feedback, self-correction does not help and can hurt; earlier gains came from oracle labels. Debate did not beat self-consistency at equal samples. | Reasoning tasks, older models. It supports *external* verification, not "ask the model to check itself". |
 | N7 | DORA — 2025 State of AI-assisted Software Development | Sep 2025 | survey (about 5,000) | SEARCH-CONFIRMED | AI adoption correlates with higher throughput **and** higher instability (more change failures, more rework); AI amplifies the existing system. | Correlational survey. |
-| N8 | Anthropic — How we built our multi-agent research system | Jun 2025 | engineering case study | SEARCH-CONFIRMED | +90.2% on an internal research eval with an orchestrator and subagents; **token usage explains about 80% of variance**; multi-agent uses about 15× chat tokens. | Contrast with N9 and item 14: benefit is task-dependent (breadth-first research) and costly. |
+| N8 | Anthropic — How we built our multi-agent research system | Jun 2025 | engineering case study | SEARCH-CONFIRMED | **+90.2%** on Anthropic's internal research eval for a Claude Opus 4 lead with Claude Sonnet 4 subagents, **compared with single-agent Claude Opus 4**; **token usage explains about 80% of variance**; multi-agent uses about 15× chat tokens. | Contrast with N9 and item 14: benefit is task-dependent (breadth-first research) and costly. |
 | N9 | Cognition (W. Yan) — Don't Build Multi-Agents | 12 Jun 2025 | practitioner essay | SEARCH-CONFIRMED | Context fragmentation across agents causes conflicting implicit decisions; keep writes single-threaded. | The author later softened this to allow read-only helpers. |
 | N10 | Invariant Labs — GitHub MCP toxic agent flow | May 2025 | security disclosure | SEARCH-CONFIRMED | A malicious public issue made an agent with private-repo access leak private data into a public PR. This is architectural, not a server bug. | Mitigation needs per-action approval; "always allow" defeats it. Directly relevant to S01/S03. |
 | N11 | OWASP — Top 10 for LLM Apps 2025, **LLM06 Excessive Agency** | Nov 2024 | standard | SEARCH-CONFIRMED | Least privilege, minimal tool sets, read-only where possible, human-in-the-loop for consequential actions. | Guidance, not measured. |
@@ -58,7 +58,7 @@ Evidence grades follow the first pass: *controlled empirical*, *engineering case
 | N14 | Zhao, Esmaeili, Fard — Bias in the Loop: auditing LLM-as-a-judge for SE (arXiv 2604.16790) | Apr 2026 | preprint | SEARCH-CONFIRMED | Judges for code, repair and tests disagree across repeated runs, and small prompt edits flip verdicts. | Preprint. |
 | N15 | Reliability without Validity (arXiv 2606.19544) | Jun 2026 | preprint, large-scale | SEARCH-CONFIRMED | 21 judges, about 541k judgments: chance-corrected agreement far below raw agreement, and consistent judges can still be badly position-biased. Proposes a minimum validation protocol. | Preprint. |
 | N16 | Anthropic — Claude Code hooks documentation | current | product documentation | SEARCH-CONFIRMED | `PreToolUse` exit 2 **blocks the tool call**; `Stop` exit 2 **blocks stopping** and feeds stderr back; `PostToolUse` cannot block. This is a real, documented seam for **A01/I04** in Claude Code (not ChatGPT). | Check against the installed version; secondary guides disagree on PreCompact. |
-| N17 | Verified Tool Calls Improve LLM Agent Reliability Under Non-Atomic Failures (arXiv 2608.02645) | Aug 2026 | preprint | SEARCH-CONFIRMED | Postcondition checks, verify-before-retry and idempotency keys cut duplicate actions at comparable success (simulated). | Simulated environment. Supports Q04 and the S01 gate's request IDs. |
+| N17 | Verified Tool Calls Improve LLM Agent Reliability Under Non-Atomic Failures (arXiv 2608.02645) | Aug 2026 | preprint | SEARCH-CONFIRMED | Postcondition checks, verify-before-retry and idempotency keys cut duplicate actions at comparable success (simulated). | Simulated environment. Supports Q04 and the request-ID design **proposed** for S01 (PR #14, not merged). |
 | N18 | Agent-First Tool API (arXiv 2605.10555) | May 2026 | preprint | SEARCH-CONFIRMED | Idempotency by default: duplicate keys return the first execution's cached result. | Design paper. |
 | N19 | [Snyk agent-scan](https://github.com/snyk/agent-scan) (successor to Invariant's mcp-scan) | current | repository implementation | repo READ | Scans agent/MCP/skill configs for prompt injection, tool poisoning and toxic flows. Apache-2.0. | **Sends configs and tool descriptions to a remote API** (secrets redacted) and requires `SNYK_TOKEN`. Needs an S02/S03 privacy decision before use. |
 | N20 | [Gitleaks](https://github.com/gitleaks/gitleaks) | current | repository implementation | repo READ | Regex+entropy secret scanning of git history, directories or stdin; baselines; `--redact`; SARIF output; MIT. A candidate engine for **L03**. | README: feature-complete, security patches only; decoding/archives off by default. |
@@ -86,9 +86,9 @@ Items 1, 9, 10, 12, 14 and 15 (original RCT) and N1–N13 and N16 predate Septem
 
 Ranked by strength of evidence and fit to our failure modes. R05 should re-rank by measured value.
 
-1. **External verification beats self-checking.** N6 (no intrinsic self-correction), item 7 (a verification-first monitor reduces fabrication) and N5 (grading that rewards guessing produces confident errors) agree. The programme's evidence gates (G01 checker, AgentWitness, the S01/S03 gates) are the right shape. Their value depends on being *invoked* (A01/I04), and N16 gives a real hook seam for Claude Code.
-2. **Measure consistency and cheating, not single passes.** pass^k (N3), lucky passes (item 6), reward hacking and test tampering (N1, N2), broken graders (item 11) and infrastructure noise (item 12) all show that one green run is weak evidence. Q02/R04 fixtures should include **impossible tasks** (any pass = cheating) and **pass^k ≥ 3** before crediting a capability.
-3. **Make consequential tools idempotent and approval-gated in code.** N10, N11, N17 and N18 support request IDs, verify-before-retry and least privilege enforced by tooling rather than prompts. The S01 gate implements the approval and idempotency part; Q04 still needs read-after-write at real tool boundaries.
+1. **External verification beats self-checking.** N6 (no intrinsic self-correction), item 7 (a verification-first monitor reduces fabrication) and N5 (grading that rewards guessing produces confident errors) agree. The programme's evidence gates (the G01 checker and AgentWitness, which exist; the S01/S03 gates, which are **proposed in open PRs #14/#13, not merged or verified**) are the right shape. Their value depends on being *invoked* (A01/I04), and N16 gives a real hook seam for Claude Code.
+2. **Measure consistency and cheating, not single passes.** pass^k (N3), lucky passes (item 6), reward hacking and test tampering (N1, N2), broken graders (item 11) and infrastructure noise (item 12) all show that one green run is weak evidence. Q02/R04 fixtures should include **impossible tasks** (any pass = cheating). Before crediting a capability, run **k ≥ 3 independent trials** and report pass^k, the fraction of tasks that pass *all* k trials. A required pass^k level is a target to set per task family, not something this synthesis can fix.
+3. **Make consequential tools idempotent and approval-gated in code.** N10, N11, N17 and N18 support request IDs, verify-before-retry and least privilege enforced by tooling rather than prompts. These safeguards are **planned**. The S01 gate that would implement approval scoping and request deduplication is an **open PR (#14), not merged or verified**, and Q04 (read-after-write at real tool boundaries) is not started.
 4. **Be sceptical of adding skills or agents.** Items 9, 10 and 14 and N8/N9 show heterogeneous, often null or negative effects with large token costs, and software engineering is SkillsBench's weakest domain. R03 must A/B test every skill and reviewer variant.
 5. **User-facing outcomes need their own measurement.** PULSE (13), DORA (N7), TheAgentCompany (N4) and METR (15) show that benchmark and activity metrics diverge from real outcomes and user effort. This supports Q01/Q05.
 6. **Bind attestations to content digests.** in-toto/SLSA (N13) is the established format for L02; reuse it rather than inventing one.
@@ -99,3 +99,43 @@ Ranked by strength of evidence and fit to our failure modes. R05 should re-rank 
 - No experiment was run here; reproduction is R02.
 - The source selection targeted this programme's failure modes, which is not a neutral sample of the literature.
 - One first-pass source (item 8) may not exist. Treat the first pass's other unverifiable details (items 2 and 3) as unconfirmed.
+
+## 7. Where each source was checked
+
+Each entry gives the primary location (P) and the independent listing or coverage (L) used for a SEARCH-CONFIRMED rating. "Not located" means the primary could not be found or read from the authoring session.
+
+| # | Primary (P) | Listing / coverage used (L) |
+|---|---|---|
+| 6 | arXiv 2605.12925 | https://icml.cc/virtual/2026/77962 |
+| 7 | https://neurips.cc/virtual/2026/173038 (listing with figures) | https://github.com/Kingsford-Group/RetryRealistic (read) |
+| 9 | arXiv 2602.12670 | https://papers.cool/arxiv/2602.12670 |
+| 10 | arXiv 2603.15401 | https://sotaverified.org/papers/260315401 |
+| 11 | https://openai.com/index/separating-signal-from-noise-coding-evaluations/ (blocked) | https://the-decoder.com/openai-finds-roughly-30-percent-of-popular-ai-coding-test-is-broken/ ; https://epoch.ai/benchmarks/swe-bench-pro/review (blocked) |
+| 13 | https://proceedings.mlr.press/v306/chen26da.html | https://icml.cc/virtual/2026/poster/64319 |
+| 14 | arXiv 2606.05670 | https://huggingface.co/papers/2606.05670 |
+| 15 | https://metr.org/blog/2026-02-24-uplift-update/ (blocked) | https://evals.alignment.org/blog/2026-02-24-uplift-update/ (mirror) |
+| N1 | arXiv 2510.20270 | https://github.com/safety-research/impossiblebench (read) |
+| N2 | https://metr.org/blog/2025-06-05-recent-reward-hacking (blocked) | https://www.lesswrong.com/posts/Zu4ai9GFpwezyfB2K/metr-recent-frontier-models-are-reward-hacking |
+| N3 | arXiv 2406.12045 | https://sierra.ai/blog/benchmarking-ai-agents ; https://github.com/sierra-research/tau-bench (read) |
+| N4 | arXiv 2412.14161 | https://neurips.cc/virtual/2025/poster/121705 |
+| N5 | https://openai.com/index/why-language-models-hallucinate/ (blocked) | https://www.maginative.com/article/ai-hallucinations-are-a-test-taking-problem-says-openai/ |
+| N6 | arXiv 2310.01798 | https://mlanthology.org/iclr/2024/huang2024iclr-large |
+| N7 | DORA 2025 report — primary not located | https://www.infoq.com/news/2025/09/dora-state-of-ai-in-dev-2025 |
+| N8 | https://www.anthropic.com/engineering/multi-agent-research-system | https://blog.bytebytego.com/p/how-anthropic-built-a-multi-agent |
+| N9 | https://cognition.ai/blog/dont-build-multi-agents | https://blog.langchain.com/how-and-when-to-build-multi-agent-systems |
+| N10 | https://invariantlabs.ai/blog/mcp-github-vulnerability | https://devclass.com/2025/05/27/researchers-warn-of-prompt-injection-vulnerability-in-github-mcp-with-no-obvious-fix/ |
+| N11 | OWASP GenAI Top 10 2025 — primary not located | https://www.invicti.com/blog/web-security/owasp-top-10-risks-llm-security-2025 |
+| N12 | NIST AI 600-1 (doi 10.6028/NIST.AI.600-1) — not read | https://www.anaconda.com/blog/nist-ai-600-1-generative-ai-profile-guide |
+| N13 | https://github.com/in-toto/attestation (read) | https://slsa.dev/blog/2023/05/in-toto-and-slsa |
+| N14 | arXiv 2604.16790 | https://www.emergentmind.com/papers/2604.16790 |
+| N15 | arXiv 2606.19544 | https://fugumt.com/fugumt/paper_check/2606.19544v1 |
+| N16 | https://docs.anthropic.com/en/docs/claude-code/hooks | third-party hook guides (secondary; disagree on PreCompact) |
+| N17 | arXiv 2608.02645 | https://huggingface.co/papers/2608.02645 |
+| N18 | arXiv 2605.10555 | search index only |
+| N19 | https://github.com/snyk/agent-scan (read) | — |
+| N20 | https://github.com/gitleaks/gitleaks (read) | — |
+| N21 | https://www.lesswrong.com/posts/qnrjAhiqire7JeoN2/good-evals-are-hard-an-impossiblebench-audit | https://www.greaterwrong.com/posts/qnrjAhiqire7JeoN2/good-evals-are-hard-an-impossiblebench-audit (mirror) |
+
+**Downgrades from this check:**
+- **N18** has only a search-index listing, so it is effectively *weakly confirmed*.
+- For **N7, N11 and N12**, the primary was not located or not read, and the figures come from coverage.
