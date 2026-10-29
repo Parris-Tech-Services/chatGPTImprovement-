@@ -82,6 +82,19 @@ Include, but do not limit research to:
 - Research benchmarks: SWE-bench Verified/Pro and improved anti-hacking variants, Terminal-Bench, OSWorld, WebArena, GAIA/BrowseComp, SkillsBench, tau-bench, METR task horizon, and independent task/trace evaluation methods. Confirm current versions, reliability/contamination caveats and precise dates.
 - Recent research on independent environment-state plus trace verification and adversarial/fault-injection evaluators; assess paper methods and reproduction rather than trusting abstract metrics.
 
+## Contemporary source leads (verify carefully; not endorsements)
+
+- [OpenAI: Build an Agent Improvement Loop with Traces, Evals, and Codex (12 May 2026)](https://developers.openai.com/cookbook/examples/agents_sdk/agent_improvement_loop) — explicit harness/trace/feedback/evaluation improvement cycle.
+- [OpenAI: Evaluate agent workflows](https://developers.openai.com/api/docs/guides/agent-evals) — trace grading and datasets/eval runs.
+- [Anthropic: Demystifying evals for AI agents (January 2026)](https://www.anthropic.com/research/demystifying-evals-for-ai-agents) — eval development and human feedback.
+- [Anthropic: Quantifying infrastructure noise in agentic coding evals (February 2026)](https://www.anthropic.com/research/infrastructure-noise) — environment confounders.
+- [GitHub: Comparing the Copilot agentic harness across models/tasks (2026)](https://github.blog/ai-and-ml/github-copilot/evaluating-performance-and-efficiency-of-the-github-copilot-agentic-harness-across-models-and-tasks/) — matched model/task harness comparison, repeated runs and cost/task.
+- [SWE-Bench Pro Verified (September 2026, preprint)](https://arxiv.org/abs/2609.08149) — benchmark contamination, reward hacking, task validity.
+- [Evidence-First Agentic Verification (October 2026, preprint)](https://arxiv.org/abs/2610.17724) — trace + state verification and fault-injection evaluation; independently reproduce claims.
+- [Artificial Analysis Coding Agent Index](https://artificialanalysis.ai/agents/coding-agents) — model/harness/time/cost benchmarks; check live methodology.
+
+These are **starting leads**, not a substitute for finding fresher independent results or checking publication dates, conflicts, data quality and replication.
+
 ## Source and evidence quality requirements
 
 1. Search to the **actual research date**; record source publication/update dates.
