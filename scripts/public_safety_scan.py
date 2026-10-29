@@ -54,7 +54,7 @@ IDENTITY_RULES = [
 TRANSCRIPT_RULES = [
     ("transcript-turn", re.compile(r"(?im)^\s*(?:\*\*)?(?:You said|ChatGPT said|User|Assistant|Human)(?:\*\*)?\s*:\s*\S")),
 ]
-GITHUB_REPO = re.compile(r"(?:https?://(?:www\.)?github\.com/|git@github\.com:|ssh://git@github\.com/)([A-Za-z0-9-]+)/([A-Za-z0-9._-]+?)(?:\.git)?(?=[/#?)\]\s\"'`>,:]|$)", re.IGNORECASE)
+GITHUB_REPO = re.compile(r"(?:https?://(?:www\.)?github\.com/|git@github\.com:|ssh://git@github\.com/)([A-Za-z0-9-]+)/([A-Za-z0-9._-]+?)(?:\.git)?(?=[/#?)\]\s\"'`>,:;!]|$)", re.IGNORECASE)
 EMAIL_OK = re.compile(r"(?i)@(?:users\.noreply\.github\.com|noreply\.[a-z.]+|example\.(?:com|org|net|test)|anthropic\.com)$|^noreply@|^git@")
 
 
