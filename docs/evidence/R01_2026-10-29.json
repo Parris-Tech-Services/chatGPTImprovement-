@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "task_id": "R01",
+  "task_type": "research",
+  "user_facing": false,
+  "actor": "ChatGPT",
+  "status": "VERIFIED COMPLETE",
+  "contract": {
+    "user_outcome": "Deliver 30-50-source external AI-agent reliability research synthesis with prior-work reconciliation and independently reviewed corrections",
+    "criteria": [
+      {
+        "id": "R01-A",
+        "kind": "artifact",
+        "description": "Publish 36-source research synthesis, including sourced original findings and 21 additional research references"
+      },
+      {
+        "id": "R01-B",
+        "kind": "review",
+        "description": "Obtain independent Greptile review, address material errors, and distinguish verified from search-confirmed or unverified source claims"
+      }
+    ],
+    "digest_sha256": "9285e29d61450e82b497d70df7ce1252b8cab6c3bebcb9834fbf2f0ce1e6878d"
+  },
+  "results": [
+    {
+      "criterion_id": "R01-A",
+      "outcome": "PASS",
+      "evidence_ids": [
+        "R01-DOC"
+      ]
+    },
+    {
+      "criterion_id": "R01-B",
+      "outcome": "PASS",
+      "evidence_ids": [
+        "R01-REVIEW"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "R01-DOC",
+      "kind": "artifact",
+      "reference": "https://github.com/Parris-Tech-Services/chatGPTImprovement-/blob/main/research/R01_SOURCE_SYNTHESIS_2026-10-29.md",
+      "provenance": "external_observed",
+      "observed_by": "GitHub contents API"
+    },
+    {
+      "id": "R01-REVIEW",
+      "kind": "review",
+      "reference": "https://github.com/Parris-Tech-Services/chatGPTImprovement-/pull/16",
+      "provenance": "external_observed",
+      "observed_by": "Greptile review 36485688; 5/5, nonblocking cautions"
+    }
+  ],
+  "external_actions": [
+    {
+      "action": "merge",
+      "performed": true,
+      "approval_reference": "User request in current conversation to continue and merge verified improvements to chatGPTImprovement-",
+      "approval_scope": "merge"
+    }
+  ],
+  "remaining_work": [],
+  "blocker": null
+}
