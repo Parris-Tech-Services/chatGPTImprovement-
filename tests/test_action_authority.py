@@ -55,6 +55,11 @@ class ApprovalTests(unittest.TestCase):
     def test_mail_without_explicit_send_permission(self):
         a,p=fixture("email_send")
         with self.assertRaises(AuthorizationDenied):gate(replace(p,explicit_send_permission=False)).execute(a,p.approval_id,lambda:1)
+    def test_truthy_non_boolean_mail_permission_must_fail(self):
+        a,p=fixture("email_send")
+        with self.assertRaises(AuthorizationDenied):
+            gate(replace(p,explicit_send_permission="false")).execute(a,p.approval_id,lambda:1)
+
     def test_mail_without_body_digest(self):
         a,p=fixture("email_reply")
         with self.assertRaises(AuthorizationDenied):gate(p).execute(replace(a,payload_digest=None),p.approval_id,lambda:1)
