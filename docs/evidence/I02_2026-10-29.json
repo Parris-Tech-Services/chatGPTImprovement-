@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "task_id": "I02",
+  "task_type": "software",
+  "user_facing": false,
+  "actor": "ChatGPT implementer",
+  "status": "VERIFIED COMPLETE",
+  "contract": {
+    "user_outcome": "Prove reachable real verifier CI invocation and honestly identify unavailable native ChatGPT and protected Windows notary paths",
+    "criteria": [
+      {
+        "id": "I02-A",
+        "kind": "artifact",
+        "description": "Publish verified runtime capability matrix with hosted, CI, and protected Windows boundaries"
+      },
+      {
+        "id": "I02-W",
+        "kind": "test",
+        "description": "Actual AgentWitness broker, anchored contract and final gates execute in pinned GitHub Actions and signed ledger validates"
+      },
+      {
+        "id": "I02-L",
+        "kind": "test",
+        "description": "Actual LLMAccountability parser, policy and CLI run and fail closed without a protected Windows notary"
+      },
+      {
+        "id": "I02-R",
+        "kind": "review",
+        "description": "Independent Greptile review findings addressed on exact reviewed source"
+      }
+    ],
+    "digest_sha256": "b7c6a7139a4249f1e00c3e139261d080a8b1d31d2d60c6de1d6d9fa3eb621972"
+  },
+  "results": [
+    {
+      "criterion_id": "I02-A",
+      "outcome": "PASS",
+      "evidence_ids": [
+        "i02-matrix"
+      ]
+    },
+    {
+      "criterion_id": "I02-W",
+      "outcome": "PASS",
+      "evidence_ids": [
+        "i02-ci"
+      ]
+    },
+    {
+      "criterion_id": "I02-L",
+      "outcome": "PASS",
+      "evidence_ids": [
+        "i02-ci"
+      ]
+    },
+    {
+      "criterion_id": "I02-R",
+      "outcome": "PASS",
+      "evidence_ids": [
+        "i02-review"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "i02-matrix",
+      "kind": "artifact",
+      "reference": "https://github.com/Parris-Tech-Services/chatGPTImprovement-/blob/main/docs/VERIFIER_RUNTIME_CAPABILITY_2026-10-29.md",
+      "provenance": "external_observed",
+      "observed_by": "GitHub contents API"
+    },
+    {
+      "id": "i02-ci",
+      "kind": "test",
+      "reference": "https://github.com/Parris-Tech-Services/chatGPTImprovement-/actions/runs/40838622054",
+      "provenance": "external_observed",
+      "observed_by": "GitHub Actions (pinned verifier source)"
+    },
+    {
+      "id": "i02-review",
+      "kind": "review",
+      "reference": "https://github.com/Parris-Tech-Services/chatGPTImprovement-/pull/12",
+      "provenance": "external_observed",
+      "observed_by": "Greptile independent review"
+    }
+  ],
+  "external_actions": [
+    {
+      "action": "merge",
+      "performed": true,
+      "approval_reference": "User request 2026-10-29 07:40 to make I01/I02 happen in chatGPTImprovement-",
+      "approval_scope": "merge"
+    }
+  ],
+  "remaining_work": [],
+  "blocker": null
+}
