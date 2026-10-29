@@ -12,7 +12,7 @@
 
 **Optional `kpi` object on a record** (all fields nullable): `eligible`, `excluded_reason`, `accepted_at`, `verified_at`, `assistant_rework`, `corrective_followups`, `claims_made`, `claims_supported`.
 
-**Adversarial tests:** [`tests/test_kpi_ledger.py`](../tests/test_kpi_ledger.py) has 11 cases. They cover inflated or self-reported success, tampered scope, reasonless exclusion, unknown eligibility, duplicates, missing data, impossible claim counts, unapproved actions and unsupported register claims.
+**Adversarial tests:** [`tests/test_kpi_ledger.py`](../tests/test_kpi_ledger.py) has 16 cases. They cover inflated or self-reported success, tampered scope, reasonless exclusion, unknown eligibility, duplicates, missing data, impossible claim counts, claims from invalid records, mixed-timezone timestamps, wrong-scope or blank approvals, malformed record files, per-task traceability, unapproved actions and unsupported register claims.
 
 ## Current output on main (29 Oct 2026)
 
@@ -21,10 +21,10 @@ Records: 1  errors: 0  excluded: 0
 End-to-end task success: 1.0 (1/1)
 Status accuracy:         1.0 (1/1)  inflated: none
 Assistant-caused rework: UNKNOWN (0/0)  missing: ['G01']
-Corrective follow-ups:   UNKNOWN  missing: ['G01']
-Claim verification:      UNKNOWN
-Unauthorised actions:    0
-Median lead time (h):    UNKNOWN
+Corrective follow-ups:   UNKNOWN (0 over 0 tasks)  missing: ['G01']
+Claim verification:      UNKNOWN (0/0)  missing: ['G01']
+Unauthorised actions:    0 
+Median lead time (h):    UNKNOWN (n=0)  missing: ['G01']
 Register VERIFIED without valid record: ['I02']
 ```
 

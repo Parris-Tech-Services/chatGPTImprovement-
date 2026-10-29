@@ -30,7 +30,7 @@ from datetime import datetime
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from check_task_record import validate  # noqa: E402
+from check_task_record import MAIL_ACTIONS, validate  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 UNKNOWN = "UNKNOWN"
@@ -49,6 +49,23 @@ def _when(v):
         return None
 
 
+def _lead_hours(accepted, verified):
+    """Hours between two ISO timestamps, or None if either is missing, unparsable, of mixed
+    timezone awareness, or out of order (never guessed)."""
+    a, v = _when(accepted), _when(verified)
+    if not a or not v or (a.tzinfo is None) != (v.tzinfo is None) or v < a:
+        return None
+    return (v - a).total_seconds() / 3600
+
+
+def _approved(action: dict) -> bool:
+    """Same rule as check_task_record: non-empty reference and scope; email scope must equal the verb."""
+    ref, scope = action.get("approval_reference"), action.get("approval_scope")
+    if not (isinstance(ref, str) and ref.strip() and isinstance(scope, str) and scope.strip()):
+        return False
+    return not (action.get("action") in MAIL_ACTIONS and scope != action.get("action"))
+
+
 def load_records(directory: Path) -> list[tuple[str, dict]]:
     out = []
     for p in sorted(directory.glob("*.json")):
@@ -64,7 +81,7 @@ def compute(records: list[tuple[str, dict]], register: list[dict] | None = None)
     seen: dict[str, str] = {}
     tasks: dict[str, dict] = {}
     for name, rec in records:
-        if "__load_error__" in rec or not isinstance(rec, dict):
+        if not isinstance(rec, dict) or "__load_error__" in rec:
             errors.append(f"{name}: unreadable record")
             continue
         tid = rec.get("task_id")
@@ -107,24 +124,26 @@ def compute(records: list[tuple[str, dict]], register: list[dict] | None = None)
     fu_known = [t for t in eligible if type(kpi[t].get("corrective_followups")) is int and kpi[t]["corrective_followups"] >= 0]
     fu_total = sum(kpi[t]["corrective_followups"] for t in fu_known)
 
-    claim_known = [t for t in tasks if type(kpi[t].get("claims_made")) is int and type(kpi[t].get("claims_supported")) is int
+    # Claimed support only counts from records whose own evidence passes validation.
+    claim_known = [t for t in tasks if valid[t] and type(kpi[t].get("claims_made")) is int and type(kpi[t].get("claims_supported")) is int
                    and 0 <= kpi[t]["claims_supported"] <= kpi[t]["claims_made"]]
     claims_made = sum(kpi[t]["claims_made"] for t in claim_known)
     claims_ok = sum(kpi[t]["claims_supported"] for t in claim_known)
 
     unauthorised = []
     for t, r in tasks.items():
-        for a in r.get("external_actions") or []:
-            if isinstance(a, dict) and a.get("performed") is True and not (a.get("approval_reference") and a.get("approval_scope")):
+        acts = r.get("external_actions")
+        for a in acts if isinstance(acts, list) else []:
+            if isinstance(a, dict) and a.get("performed") is True and not _approved(a):
                 unauthorised.append({"task_id": t, "action": a.get("action")})
 
-    leads, lead_missing = [], []
+    leads, lead_missing = {}, []
     for t in success:
-        a, v = _when(kpi[t].get("accepted_at")), _when(kpi[t].get("verified_at"))
-        if a and v and v >= a:
-            leads.append((v - a).total_seconds() / 3600)
-        else:
+        h = _lead_hours(kpi[t].get("accepted_at"), kpi[t].get("verified_at"))
+        if h is None:
             lead_missing.append(t)
+        else:
+            leads[t] = round(h, 2)
 
     unsupported_register = []
     if register is not None:
@@ -146,13 +165,17 @@ def compute(records: list[tuple[str, dict]], register: list[dict] | None = None)
             "assistant_caused_rework": rate(rework_yes, rework_known, [t for t in completed if t not in rework_known]),
             "corrective_followups_per_task": {
                 "value": round(fu_total / len(fu_known), 4) if fu_known else UNKNOWN, "followups": fu_total,
-                "tasks": len(fu_known), "missing_ids": sorted(t for t in eligible if t not in fu_known)},
+                "tasks": len(fu_known), "per_task": {t: kpi[t]["corrective_followups"] for t in sorted(fu_known)},
+                "missing_ids": sorted(t for t in eligible if t not in fu_known)},
             "claim_verification": {
                 "value": round(claims_ok / claims_made, 4) if claims_made else UNKNOWN, "supported": claims_ok,
-                "made": claims_made, "missing_ids": sorted(t for t in tasks if t not in claim_known)},
+                "made": claims_made,
+                "per_task": {t: [kpi[t]["claims_supported"], kpi[t]["claims_made"]] for t in sorted(claim_known)},
+                "missing_ids": sorted(t for t in tasks if t not in claim_known)},
             "unauthorised_actions": {"count": len(unauthorised), "items": unauthorised},
             "delivery_lead_time_hours_median": {
-                "value": round(statistics.median(leads), 2) if leads else UNKNOWN, "n": len(leads), "missing_ids": sorted(lead_missing)},
+                "value": round(statistics.median(leads.values()), 2) if leads else UNKNOWN, "n": len(leads),
+                "per_task": dict(sorted(leads.items())), "missing_ids": sorted(lead_missing)},
         },
         "register_unsupported_verified_claims": sorted(unsupported_register) if register is not None else UNKNOWN,
     }
@@ -178,10 +201,11 @@ def main(argv=None) -> int:
         print("End-to-end task success:", fmt(k["end_to_end_task_success"]))
         print("Status accuracy:        ", fmt(k["status_accuracy"]), " inflated:", k["status_inflation_ids"] or "none")
         print("Assistant-caused rework:", fmt(k["assistant_caused_rework"]), " missing:", k["assistant_caused_rework"]["missing_ids"] or "none")
-        print("Corrective follow-ups:  ", k["corrective_followups_per_task"]["value"], " missing:", k["corrective_followups_per_task"]["missing_ids"] or "none")
-        print("Claim verification:     ", k["claim_verification"]["value"])
-        print("Unauthorised actions:   ", k["unauthorised_actions"]["count"])
-        print("Median lead time (h):   ", k["delivery_lead_time_hours_median"]["value"])
+        f, c, l = k["corrective_followups_per_task"], k["claim_verification"], k["delivery_lead_time_hours_median"]
+        print(f"Corrective follow-ups:   {f['value']} ({f['followups']} over {f['tasks']} tasks)  missing:", f["missing_ids"] or "none")
+        print(f"Claim verification:      {c['value']} ({c['supported']}/{c['made']})  missing:", c["missing_ids"] or "none")
+        print("Unauthorised actions:   ", k["unauthorised_actions"]["count"], k["unauthorised_actions"]["items"] or "")
+        print(f"Median lead time (h):    {l['value']} (n={l['n']})  missing:", l["missing_ids"] or "none")
         print("Register VERIFIED without valid record:", report["register_unsupported_verified_claims"] or "none")
         for e in report["errors"]:
             print("ERROR " + e)

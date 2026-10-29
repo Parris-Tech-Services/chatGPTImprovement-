@@ -105,5 +105,39 @@ class KpiLedgerTests(unittest.TestCase):
         self.assertEqual(rep['register_unsupported_verified_claims'], ['T9'])
 
 
+class ReviewRegressionTests(unittest.TestCase):
+    def test_claims_from_invalid_records_do_not_count(self):
+        n, r = rec('T1', claims_made=100, claims_supported=100)
+        r['evidence'][0]['provenance'] = 'self_reported'
+        rep = compute([(n, r), rec('T2', claims_made=2, claims_supported=1)])
+        self.assertEqual(rep['kpis']['claim_verification']['value'], 0.5)
+        self.assertIn('T1', rep['kpis']['claim_verification']['missing_ids'])
+
+    def test_mixed_timezones_are_missing_not_a_crash(self):
+        rep = compute([rec('T1', accepted_at='2026-10-29T01:00:00', verified_at='2026-10-29T05:00:00Z')])
+        self.assertEqual(rep['kpis']['delivery_lead_time_hours_median']['value'], UNKNOWN)
+        self.assertEqual(rep['kpis']['delivery_lead_time_hours_median']['missing_ids'], ['T1'])
+
+    def test_wrong_scope_or_blank_approval_is_unauthorised(self):
+        for action in [{'action': 'email_send', 'performed': True, 'approval_reference': 'chat-1', 'approval_scope': 'email_reply'},
+                       {'action': 'merge', 'performed': True, 'approval_reference': '  ', 'approval_scope': 'merge'}]:
+            n, r = rec('T1'); r['external_actions'] = [action]
+            self.assertEqual(compute([(n, r)])['kpis']['unauthorised_actions']['count'], 1, action)
+
+    def test_malformed_records_do_not_stop_the_report(self):
+        n, r = rec('T2'); r['external_actions'] = 7
+        rep = compute([('null.json', None), ('num.json', 3), ('t.json', True), (n, r), rec('T1')])
+        self.assertEqual(sum('unreadable' in e for e in rep['errors']), 3)
+        self.assertEqual(rep['kpis']['end_to_end_task_success']['numerator_ids'], ['T1'])
+
+    def test_totals_trace_back_to_tasks(self):
+        rep = compute([rec('T1', corrective_followups=2, claims_made=3, claims_supported=3,
+                           accepted_at='2026-10-29T01:00:00Z', verified_at='2026-10-29T02:30:00Z')])
+        k = rep['kpis']
+        self.assertEqual(k['corrective_followups_per_task']['per_task'], {'T1': 2})
+        self.assertEqual(k['claim_verification']['per_task'], {'T1': [3, 3]})
+        self.assertEqual(k['delivery_lead_time_hours_median']['per_task'], {'T1': 1.5})
+
+
 if __name__ == '__main__':
     unittest.main()
