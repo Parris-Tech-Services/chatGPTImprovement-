@@ -1,0 +1,65 @@
+name: Daily real-world quality and accountability
+# Runs using GitHub-hosted CI, not ChatGPT's five scheduled-task slots.
+# 21:20 UTC = 08:20 AEDT / 07:20 AEST next day. Report prints true Sydney time.
+on:
+  schedule:
+    - cron: '20 21 * * *'
+  workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/daily_quality_report.py'
+      - 'scripts/kpi_ledger.py'
+      - 'tests/test_daily_quality_report.py'
+      - 'tests/test_kpi_ledger.py'
+      - '.github/workflows/daily-quality.yml'
+  pull_request:
+    paths:
+      - 'scripts/daily_quality_report.py'
+      - 'scripts/kpi_ledger.py'
+      - 'tests/test_daily_quality_report.py'
+      - 'tests/test_kpi_ledger.py'
+      - '.github/workflows/daily-quality.yml'
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: read
+
+concurrency:
+  group: daily-quality-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify-and-measure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test actual KPI evidence calculations and adversarial daily signals
+        run: |
+          python -m unittest discover -s tests -p 'test_kpi_ledger.py' -v
+          python -m unittest discover -s tests -p 'test_daily_quality_report.py' -v
+          python -m compileall -q scripts/daily_quality_report.py scripts/kpi_ledger.py
+      - name: Produce factual timestamped project evidence and explicit UNKNOWNs
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            python scripts/daily_quality_report.py --offline --out "$RUNNER_TEMP/daily-quality"
+          else
+            python scripts/daily_quality_report.py --out "$RUNNER_TEMP/daily-quality" --strict
+          fi
+      - name: Upload public-safe JSON and Markdown accountability report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-quality-${{ github.run_id }}
+          path: ${{ runner.temp }}/daily-quality/
+          if-no-files-found: warn
+          retention-days: 30
