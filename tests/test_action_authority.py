@@ -127,6 +127,21 @@ class ApprovalTests(unittest.TestCase):
         a,p=fixture()
         with self.assertRaises(AuthorizationDenied):
             ScopedActionGate(lambda _:None,lambda x,y:True,clock=lambda:NOW).execute(a,"approved",lambda:1)
+    def test_authority_expiring_during_verification_does_not_execute(self):
+        a,p=fixture()
+        ticks=iter([NOW,NOW+timedelta(minutes=6)])
+        g=ScopedActionGate(lambda _:p,lambda x,y:True,clock=lambda:next(ticks))
+        calls=[]
+        with self.assertRaises(AuthorizationDenied):
+            g.execute(a,p.approval_id,lambda:calls.append("executed"))
+        self.assertEqual(calls,[])
+
+    def test_malformed_resolver_record_is_permission_denial(self):
+        a,p=fixture()
+        g=ScopedActionGate(lambda _:{"approval_id":p.approval_id},lambda x,y:True,clock=lambda:NOW)
+        with self.assertRaises(AuthorizationDenied):
+            g.execute(a,p.approval_id,lambda:1)
+
     def test_naive_clock_denied(self):
         a,p=fixture();g=ScopedActionGate(lambda _:p,lambda x,y:True,clock=lambda:datetime(2026,10,29))
         with self.assertRaises(AuthorizationDenied):g.execute(a,p.approval_id,lambda:1)
