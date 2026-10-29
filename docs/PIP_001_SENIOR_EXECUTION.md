@@ -9,7 +9,17 @@
 
 The provisional review identified repeated delivery follow-through, end-to-end verification, evidence quality, and customer-effort problems. A *performance improvement plan* identifies what must change, how progress will be monitored, and what support and procedures are available. This is **not an employment action** or a modification to the underlying ChatGPT model.
 
-**First step:** enforce a strict **Definition of Done (DoD)** and a task-evidence record *before* claiming the next work item is finished. A historical baseline is also required; no historical KPI percentages are currently known.
+**First step, updated after the 29 October reuse audit:** enforce the **existing** AgentWitness/AgentCheck Definition-of-Done + final-answer gate on an actual task, using LLMAccountability independent evidence and JoshMemory continuity where genuinely available. Preserve a task evidence record, but don't mistake writing one for running the actual verification tools. Historical KPI percentages remain unknown.
+
+## Mandatory reuse and integration — do not duplicate existing tools
+
+- Read the [existing stack audit](EXISTING_ACCOUNTABILITY_STACK_AUDIT_2026-10-29.md) and [prior decisions](PREVIOUS_CHAT_HISTORY_ACCOUNTABILITY_2026-10-29.md) before building anything new.
+- **AgentWitness/AgentCheck:** existing broker, anchored contracts, ClaimGuard and `aw final` are the preferred verification layer where available. Record actual invocation and provenance; Markdown alone is not enforcement.
+- **LLMAccountability:** require proof that the privileged Windows notary and runner work; only supported claim recipes can PASS, others remain INCONCLUSIVE.
+- **Independent reviewers/council:** semantic review is complementary; missing or failed tests outrank consensus. Do not mislabel direct-CLI execution as broker-witnessed.
+- **JoshMemory:** record provenance links and resume checkpoints; it must not self-certify a historical claim.
+- **Live outcomes:** separately check the actual target environment and user-facing flow.
+- **Hosted runtime limitation:** if the current ChatGPT environment cannot invoke local `aw`, `agy`, or other CLIs, mark **INTEGRATION BLOCKED** with the missing adapter/access and never claim the underlying ChatGPT model has changed.
 
 ## How senior-engineer behaviour works
 
