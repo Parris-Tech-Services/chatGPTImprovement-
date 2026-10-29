@@ -63,6 +63,12 @@ class PublicSafetyScanTests(unittest.TestCase):
         self.assertTrue(any('unverified-repo-link' in f for f in self.scan('see ' + GHURL + 'acme/unknown')),
                         'unknown visibility must fail in strict (CI) mode')
 
+    def test_private_repo_links_with_sentence_punctuation(self):
+        for punctuation in ("!", ";"):
+            with self.subTest(punctuation=punctuation):
+                self.assertFlags("reference: " + GHURL + "acme/secret-tool" + punctuation,
+                                 "private-repo-link")
+
     def test_github_owner_repo_placeholder_is_not_private_project(self):
         # Reviewer example syntax must not lock CI into a permanent false failure.
         # This exception applies only to the conventional exact placeholder.
