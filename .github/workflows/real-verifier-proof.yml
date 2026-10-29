@@ -70,7 +70,8 @@ jobs:
           python scripts/key_leak_canary.py \
             --key-root "$GITHUB_WORKSPACE/.agentwitness" --key-root "$HOME/.agentwitness" --key-root "$HOME/.config/agentwitness" \
             --output "$RUNNER_TEMP/verification-proof.json" --output "$RUNNER_TEMP/verifier.log" \
-            --git-repo "$GITHUB_WORKSPACE"
+            --git-repo "$GITHUB_WORKSPACE" \
+            --known-permission-finding private.pem   # AgentWitness 4d7746d writes it 0644: docs/SECURITY_AUDIT_S02_2026-10-29.md finding S02-1
       - name: Publish redacted summary, never signing keys or ledger
         if: always()
         uses: actions/upload-artifact@v4

@@ -64,6 +64,25 @@ class KeyLeakCanaryTests(unittest.TestCase):
         findings, _ = self.run_check(git=self.d)
         self.assertTrue(any('signing.key: tracked by git' in f for f in findings), findings)
 
+    def test_public_keys_are_not_secrets(self):
+        (self.keys / 'public.pem').write_text('-----BEGIN ' + 'PUBLIC KEY-----\nMCowBQYDK2VwAyEA' + 'q' * 40 + '\n-----END PUBLIC KEY-----\n')
+        os.chmod(self.keys / 'public.pem', 0o644)
+        (self.keys / 'id.pub').write_text('ssh-ed25519 AAAAC3NzaC1lZDI1NTE5' + 'z' * 40); os.chmod(self.keys / 'id.pub', 0o644)
+        names = {p.name for p in klc.find_keys([self.keys])}
+        self.assertNotIn('public.pem', names); self.assertNotIn('id.pub', names)
+        self.assertEqual(self.run_check()[0], [])
+
+    def test_known_permission_finding_warns_but_leaks_still_fail(self):
+        os.chmod(self.keys / 'signing.key', 0o644)
+        buf = io.StringIO()
+        with redirect_stdout(buf):
+            code = klc.main(['--key-root', str(self.keys), '--output', str(self.out), '--known-permission-finding', 'signing.key'])
+        self.assertEqual(code, 0, buf.getvalue()); self.assertIn('KNOWN UPSTREAM FINDING', buf.getvalue())
+        (self.out / 'leak.log').write_text(RAW.hex())
+        with redirect_stdout(io.StringIO()):
+            code = klc.main(['--key-root', str(self.keys), '--output', str(self.out), '--known-permission-finding', 'signing.key'])
+        self.assertEqual(code, 1, 'a leak must fail even when the permission finding is known')
+
     def test_no_keys_found_does_not_pass(self):
         empty = self.d / 'empty'; empty.mkdir()
         buf = io.StringIO()

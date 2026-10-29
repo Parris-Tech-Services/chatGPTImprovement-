@@ -30,15 +30,24 @@ FRAGMENT = 24            # shortest secret fragment we look for, in characters
 MAX_KEY_BYTES = 64 * 1024
 
 
+PUBLIC = re.compile(r"(?i)(public|\.pub$)")
+
+
 def is_key_file(p: Path) -> bool:
+    """Private key material only: public keys are meant to be shared."""
     if not p.is_file() or p.stat().st_size == 0 or p.stat().st_size > MAX_KEY_BYTES:
+        return False
+    try:
+        data = p.read_bytes()
+    except OSError:
+        return False
+    if PEM_PRIVATE.search(data):
+        return True
+    if PUBLIC.search(p.name) or b"PUBLIC KEY-----" in data:
         return False
     if NAME.search(p.name):
         return True
-    try:
-        return bool(PEM_PRIVATE.search(p.read_bytes()))
-    except OSError:
-        return False
+    return False
 
 
 def find_keys(roots: list[Path]) -> list[Path]:
@@ -117,8 +126,16 @@ def main(argv=None) -> int:
     ap.add_argument("--output", type=Path, action="append", required=True)
     ap.add_argument("--git-repo", type=Path)
     ap.add_argument("--allow-no-keys", action="store_true")
+    ap.add_argument("--known-permission-finding", action="append", default=[], metavar="KEYNAME",
+                    help="a documented upstream permission bug for this key name: warn instead of fail (leaks still fail)")
     a = ap.parse_args(argv)
     findings, n = check(a.key_root, a.output, a.git_repo)
+    known = [f for f in findings if ": permissions " in f and f.split(":")[0].removeprefix("key ") in a.known_permission_finding]
+    findings = [f for f in findings if f not in known]
+    for f in known:
+        print("KNOWN UPSTREAM FINDING " + f)
+        if os.environ.get("GITHUB_ACTIONS") == "true":
+            print("::warning title=key-leak-canary (tracked upstream)::" + f)
     for f in findings:
         print("FINDING " + f)
         if os.environ.get("GITHUB_ACTIONS") == "true":
