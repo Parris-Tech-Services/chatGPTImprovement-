@@ -3,7 +3,7 @@
 **Compiled:** 29 October 2026 (Australia/Sydney)  
 **Scope:** All outstanding action items surfaced in this ChatGPT improvement conversation, current research/PIP documents and directly inspected relevant repositories. This does **not** claim a comprehensive audit of every previous chat, all open projects or private machine state.
 
-**Status:** 52 specific items identified; **1 VERIFIED COMPLETE (G01), 51 OPEN**. The G01 evidence is linked below; remaining underlying capabilities may exist, but their specific acceptance requirements are still unverified in this programme. Some underlying capabilities already exist; OPEN means the **specific acceptance evidence requested here has not been produced in this programme**. Existing features should be verified before new engineering work is started.
+**Status:** 52 specific items identified; **2 VERIFIED COMPLETE (G01, I02), 50 OPEN**. The G01 evidence is linked below; remaining underlying capabilities may exist, but their specific acceptance requirements are still unverified in this programme. Some underlying capabilities already exist; OPEN means the **specific acceptance evidence requested here has not been produced in this programme**. Existing features should be verified before new engineering work is started.
 
 **Owner assignment:** Functional system/repository is assigned below, **not a GitHub user or an autonomous agent invocation**. No people were assigned or notified. Private review/supervisor work is role-named without exposing private repository URLs.
 
@@ -30,6 +30,8 @@
 | R | External deep research and controlled experiments | chatGPTImprovement- research / existing evaluation runners | 5 | [Issue #9](https://github.com/Parris-Tech-Services/chatGPTImprovement-/issues/9) |
 | S | Permissions, privacy and supply-chain trust | All components (security gate) | 3 | [Issue #10](https://github.com/Parris-Tech-Services/chatGPTImprovement-/issues/10) |
 
+**Dependency correction (29 October 2026):** Original register incorrectly made the I02 runtime-access inventory depend on the larger I01 end-user integration proof. Corrected I02 prerequisite to G01 and added I02 as a prerequisite to I01; **neither task's original acceptance requirement was relaxed**. I01 remains OPEN pending actual user-facing acceptance and protected Windows runner evidence.
+
 ## Exact tasks and acceptance conditions
 
 ### G — Governance, baseline and PIP
@@ -49,8 +51,9 @@
 
 **Functional owner:** chatGPTImprovement- / existing components · Existing [#2](https://github.com/Parris-Tech-Services/chatGPTImprovement-/issues/2)
 
-- [ ] **I01 · P0 · Prove one real witnessed task end to end.** Action: Select small authorised app issue; use existing AgentWitness frozen contract, source-state review, actual tests, reviewer where available, live acceptance and final claim gate. **Done only when:** Reproducible task trace shows source SHA, actual command receipts, independent verdict and actual user flow; or named missing integration blocks. **Depends on:** G01.
-- [ ] **I02 · P0 · Check hosted ChatGPT-to-local verifier access honestly.** Action: Inventory available connector/MCP/CI/runner paths to aw, notary and reviewer; validate with harmless dry-run, not descriptions of theoretical hooks. **Done only when:** Published capability matrix per runtime: executable, authorised, observed evidence, missing adapter; impossible paths marked BLOCKED. **Depends on:** I01.
+- [ ] **I01 · P0 · Prove one real witnessed task end to end.** Action: Select small authorised app issue; use existing AgentWitness frozen contract, source-state review, actual tests, reviewer where available, live acceptance and final claim gate. **Done only when:** Reproducible task trace shows source SHA, actual command receipts, independent verdict and actual user flow; or named missing integration blocks. **Depends on:** G01,I02.
+- [x] **I02 · P0 · Check hosted ChatGPT-to-local verifier access honestly.** Action: Inventory available connector/MCP/CI/runner paths to aw, notary and reviewer; validate with harmless dry-run, not descriptions of theoretical hooks. **Done only when:** Published capability matrix per runtime: executable, authorised, observed evidence, missing adapter; impossible paths marked BLOCKED. **Depends on:** G01.
+  **Verified evidence:** [I02 run record](evidence/I02_2026-10-29.md), [merged PR #12](https://github.com/Parris-Tech-Services/chatGPTImprovement-/pull/12), [post-merge green CI](https://github.com/Parris-Tech-Services/chatGPTImprovement-/actions/runs/40838622054), [runtime capability audit](VERIFIER_RUNTIME_CAPABILITY_2026-10-29.md). Scope is *access inventory and real CI invocation*, NOT a fully operational Windows notary or native ChatGPT final-hook.
 - [ ] **I03 · P1 · Define minimum typed handoff between existing tools.** Action: Specify DoD/receipt/notary/reviewer/live-acceptance/JoshMemory reference event schema including SHA, provenance, expiry, task ID, approval and status. **Done only when:** Schema examples validate; unsupported attestations never become VERIFIED and no secrets enter public events. **Depends on:** I02,A02,M03.
 - [ ] **I04 · P1 · Enforce final-report gate on connected workflow.** Action: Add lifecycle adapter or external CI/MCP check for genuinely reachable agent run; avoid claiming universal ChatGPT interception. **Done only when:** Negative test with fake 'tests passed' is blocked; positive real proof passes; unreachable hosted channels disclosed. **Depends on:** I02,A01.
 - [ ] **I05 · P1 · Publish an integration threat model and ownership boundary.** Action: Clarify broker-witnessed vs imported vs independently tested, trust roots, reviewer provenance, policy ownership, human merge and email approval. **Done only when:** Table of trust levels and bypass tests reviewed; no private source/credentials or unverifiable claims. **Depends on:** I03,S01.
