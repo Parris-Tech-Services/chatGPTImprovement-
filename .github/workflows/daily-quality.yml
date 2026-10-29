@@ -9,6 +9,8 @@ on:
     paths:
       - 'scripts/daily_quality_report.py'
       - 'scripts/kpi_ledger.py'
+      - 'docs/evidence/**'
+      - 'docs/MASTER_ACTION_BACKLOG_2026-10-29.csv'
       - 'tests/test_daily_quality_report.py'
       - 'tests/test_kpi_ledger.py'
       - '.github/workflows/daily-quality.yml'
@@ -16,6 +18,8 @@ on:
     paths:
       - 'scripts/daily_quality_report.py'
       - 'scripts/kpi_ledger.py'
+      - 'docs/evidence/**'
+      - 'docs/MASTER_ACTION_BACKLOG_2026-10-29.csv'
       - 'tests/test_daily_quality_report.py'
       - 'tests/test_kpi_ledger.py'
       - '.github/workflows/daily-quality.yml'
