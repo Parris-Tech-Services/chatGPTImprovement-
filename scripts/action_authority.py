@@ -112,7 +112,7 @@ class ScopedActionGate(Generic[T]):
         now = self._clock()
         if not isinstance(now, datetime) or now.tzinfo is None or now.utcoffset() is None:
             raise AuthorizationDenied("No trusted time source")
-        if authority is None or authority.approval_id != approval_id or not _matches(action, authority, now):
+        if not isinstance(authority, Authority) or authority.approval_id != approval_id or not _matches(action, authority, now):
             raise AuthorizationDenied("Approval missing, expired, generic or outside action scope")
         try:
             independently_verified = self._verify(authority, action)
@@ -120,6 +120,11 @@ class ScopedActionGate(Generic[T]):
             raise AuthorizationDenied("Independent approval verification unavailable") from exc
         if independently_verified is not True:
             raise AuthorizationDenied("No independently verified approval")
+        now = self._clock()
+        if not isinstance(now, datetime) or now.tzinfo is None or now.utcoffset() is None:
+            raise AuthorizationDenied("No trusted time source")
+        if not _matches(action, authority, now):
+            raise AuthorizationDenied("Approval expired or changed during verification")
         self._spent_request_ids.add(action.request_id)
         self._spent_approvals.add(approval_id)
         return executor()
