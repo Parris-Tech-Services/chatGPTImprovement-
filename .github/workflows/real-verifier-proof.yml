@@ -6,12 +6,14 @@ on:
       - 'scripts/verify_agent_stack_ci.py'
       - 'tests/**'
       - 'scripts/check_task_record.py'
+      - 'scripts/key_leak_canary.py'
       - '.github/workflows/real-verifier-proof.yml'
   pull_request:
     paths:
       - 'scripts/verify_agent_stack_ci.py'
       - 'tests/**'
       - 'scripts/check_task_record.py'
+      - 'scripts/key_leak_canary.py'
       - '.github/workflows/real-verifier-proof.yml'
   workflow_dispatch:
 
@@ -59,7 +61,16 @@ jobs:
       - name: Run real witnessed acceptance and LLM policy invocation
         shell: bash
         run: |
-          python scripts/verify_agent_stack_ci.py --repo "$GITHUB_WORKSPACE" --llm-source "$GITHUB_WORKSPACE/.external_verifiers/llmaccountability" --report "$RUNNER_TEMP/verification-proof.json"
+          set -o pipefail
+          python scripts/verify_agent_stack_ci.py --repo "$GITHUB_WORKSPACE" --llm-source "$GITHUB_WORKSPACE/.external_verifiers/llmaccountability" --report "$RUNNER_TEMP/verification-proof.json" 2>&1 | tee "$RUNNER_TEMP/verifier.log"
+      - name: S02 key-leak canary over the real AgentWitness keys
+        if: always()
+        shell: bash
+        run: |
+          python scripts/key_leak_canary.py \
+            --key-root "$GITHUB_WORKSPACE/.agentwitness" --key-root "$HOME/.agentwitness" --key-root "$HOME/.config/agentwitness" \
+            --output "$RUNNER_TEMP/verification-proof.json" --output "$RUNNER_TEMP/verifier.log" \
+            --git-repo "$GITHUB_WORKSPACE"
       - name: Publish redacted summary, never signing keys or ledger
         if: always()
         uses: actions/upload-artifact@v4
