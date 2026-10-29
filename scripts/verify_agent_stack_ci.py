@@ -90,7 +90,8 @@ def llm_policy_proof(llm_root: Path) -> dict:
     return {"actual_llm_source_invoked": True, "claim_types_extracted": sorted(names),
             "missing_evidence_fail_closed": True,
             "unsupported_fully_complete_rejected": True,
-            "positive_policy_unit_case": True,\n            "duplicate_tests_pass_claims_seen": len(tests) > 1,
+            "positive_policy_unit_case": True,
+            "duplicate_tests_pass_claims_seen": len(tests) > 1,
             "protected_notary_invoked": False, "notary_attestation": "NOT RUN"}
 
 
