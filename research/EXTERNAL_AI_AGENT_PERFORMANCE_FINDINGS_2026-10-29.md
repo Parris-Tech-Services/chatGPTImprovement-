@@ -4,6 +4,14 @@
 **Purpose:** Address the explicit request to investigate other teams' **real interventions and measured results**, not merely write a prompt about how to research them.  
 **Status:** **First substantive external research pass complete**; not a systematic 30–50-source comprehensive review, not a reproduction of external experiments, and not proof that proposed changes improve *our* agent yet.
 
+> **Correction notice (29 Oct 2026, R01 re-verification):** see [R01 source synthesis](R01_SOURCE_SYNTHESIS_2026-10-29.md) §1.
+> - **Item 8** ("Repair Economics", Zenodo) could not be found and may not exist; **do not cite its figures**.
+> - **Item 7:** the monitor figures do not match the NeurIPS listing (42.5→48.0% recovery, 24.7→20.3% fabrication).
+> - **Item 6:** the data is SWE-bench Verified across eight backends, not "60 tasks".
+> - **Item 11:** the 249/34.1% human-review figure is OpenAI's, not Epoch's.
+> - **Item 2:** the Bolt/Descript examples are unconfirmed.
+> The table below is left as originally written for the record.
+
 ## Executive findings
 
 The highest-value lessons for our own unfinished work are to:
