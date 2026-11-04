@@ -6,12 +6,14 @@ on:
       - 'scripts/verify_agent_stack_ci.py'
       - 'tests/**'
       - 'scripts/check_task_record.py'
+      - 'scripts/key_leak_canary.py'
       - '.github/workflows/real-verifier-proof.yml'
   pull_request:
     paths:
       - 'scripts/verify_agent_stack_ci.py'
       - 'tests/**'
       - 'scripts/check_task_record.py'
+      - 'scripts/key_leak_canary.py'
       - '.github/workflows/real-verifier-proof.yml'
   workflow_dispatch:
 
@@ -28,18 +30,18 @@ jobs:
       PIP_DISABLE_PIP_VERSION_CHECK: "1"
     steps:
       - name: Checkout governed target repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
       - name: Checkout pinned AgentWitness implementation
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           repository: Parris-Tech-Services/AgentCheck
           ref: 4d7746d664e4c2d75e64a8436df0bc9b7c9dfc9e
           path: .external_verifiers/agentcheck
           persist-credentials: false
       - name: Checkout pinned LLMAccountability implementation
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           repository: Parris-Tech-Services/LLMAccountability
           ref: 881ef0cdd8da3a3bd025bdc78ed8e00cef602ad8
@@ -49,7 +51,7 @@ jobs:
         shell: bash
         run: |
           echo '.external_verifiers/' >> .git/info/exclude
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: '3.12'
       - name: Install actual AgentWitness CLI (no production credentials)
@@ -59,10 +61,20 @@ jobs:
       - name: Run real witnessed acceptance and LLM policy invocation
         shell: bash
         run: |
-          python scripts/verify_agent_stack_ci.py --repo "$GITHUB_WORKSPACE" --llm-source "$GITHUB_WORKSPACE/.external_verifiers/llmaccountability" --report "$RUNNER_TEMP/verification-proof.json"
+          set -o pipefail
+          python scripts/verify_agent_stack_ci.py --repo "$GITHUB_WORKSPACE" --llm-source "$GITHUB_WORKSPACE/.external_verifiers/llmaccountability" --report "$RUNNER_TEMP/verification-proof.json" 2>&1 | tee "$RUNNER_TEMP/verifier.log"
+      - name: S02 key-leak canary over the real AgentWitness keys
+        if: always()
+        shell: bash
+        run: |
+          python scripts/key_leak_canary.py \
+            --key-root "$GITHUB_WORKSPACE/.agentwitness" --key-root "$HOME/.agentwitness" --key-root "$HOME/.config/agentwitness" \
+            --output "$RUNNER_TEMP/verification-proof.json" --output "$RUNNER_TEMP/verifier.log" \
+            --git-repo "$GITHUB_WORKSPACE" \
+            --known-permission-finding private.pem   # AgentWitness 4d7746d writes it 0644: docs/SECURITY_AUDIT_S02_2026-10-29.md finding S02-1
       - name: Publish redacted summary, never signing keys or ledger
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: verifier-proof-${{ github.run_id }}
           path: ${{ runner.temp }}/verification-proof.json
