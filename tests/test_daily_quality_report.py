@@ -20,6 +20,20 @@ def sample_run(name, branch="main", conclusion="success", event="push", when="20
 
 
 class DailyQualityTests(unittest.TestCase):
+    def test_old_green_does_not_verify_current_head(self):
+        rows = q.latest_main_workflows([sample_run('Build')], 'main', 'a'*40)
+        self.assertEqual(rows[0]['state'], 'PASS')
+        self.assertEqual(rows[0]['current_head_state'], 'UNKNOWN')
+        self.assertFalse(rows[0]['matches_default_head'])
+
+    def test_matching_head_preserves_failure(self):
+        rows = q.latest_main_workflows([sample_run('Build', conclusion='failure')], 'main', 'f'*40)
+        self.assertEqual(rows[0]['current_head_state'], 'FAIL')
+
+    def test_missing_head_cannot_claim_current_pass(self):
+        rows = q.latest_main_workflows([sample_run('Build')], 'main')
+        self.assertEqual(rows[0]['current_head_state'], 'UNKNOWN')
+
     def test_failing_pr_does_not_masquerade_as_failing_main(self):
         runs = [sample_run("Build", "feature", "failure", "pull_request", workflow=1),
                 sample_run("Build", "main", "success", workflow=1)]
@@ -79,6 +93,7 @@ class DailyQualityTests(unittest.TestCase):
     def test_real_api_shaped_data_projects_main_only(self):
         responses=[
             {"private":False,"default_branch":"main"},
+            {"commit":{"sha":"f"*40}},
             {"workflow_runs":[sample_run("Build","main","success"),sample_run("Build","feature","failure","pull_request")]},
             [{"number":4},{"number":5}],
         ]
@@ -88,6 +103,7 @@ class DailyQualityTests(unittest.TestCase):
         self.assertEqual((p["state"],p["open_pr_count"],p["last_24h_main_runs"]),("OBSERVED",2,1))
         self.assertEqual(p["last_24h_failed_main_runs"],0)
         self.assertEqual(p["latest_main_workflows"][0]["state"],"PASS")
+        self.assertEqual(p["latest_main_workflows"][0]["current_head_state"],"PASS")
 
     def test_private_repo_is_not_queried_further(self):
         with patch.object(q,"request_json",return_value={"private":True}) as f:

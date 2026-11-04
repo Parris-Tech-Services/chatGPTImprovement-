@@ -13,6 +13,7 @@ import os
 import sys
 import urllib.error
 import urllib.request
+from urllib.parse import quote
 from collections import Counter
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -64,7 +65,7 @@ def check_public_page(url: str) -> dict:
                 "meaning": "HTTP failed; no browser outcome established"}
 
 
-def latest_main_workflows(runs: list[dict], branch: str) -> list[dict]:
+def latest_main_workflows(runs: list[dict], branch: str, head_sha: str | None = None) -> list[dict]:
     """Ignore PR/feature branch results for main health. Keep latest per workflow."""
     main = sorted((x for x in runs if x.get("head_branch") == branch and
                    x.get("event") in {"push", "workflow_dispatch", "schedule"}),
@@ -79,6 +80,8 @@ def latest_main_workflows(runs: list[dict], branch: str) -> list[dict]:
                      "UNKNOWN" if x.get("status") != "completed" or not conclusion else "NEUTRAL")
             found[key] = {"workflow": x.get("name") or str(key),
                           "state": state, "conclusion": conclusion or "PENDING",
+                          "matches_default_head": bool(head_sha and x.get("head_sha") == head_sha),
+                          "current_head_state": state if head_sha and x.get("head_sha") == head_sha else "UNKNOWN",
                           "source_sha": x.get("head_sha"),
                           "run_url": x.get("html_url"),
                           "date": x.get("created_at")}
@@ -126,21 +129,24 @@ def remote_project(repo: str, now: datetime) -> dict:
         if meta.get("private") is True:
             return {"repo": repo, "state": "SKIPPED_PRIVATE"}
         branch = meta.get("default_branch", "main")
-        runs = request_json("/repos/" + repo + "/actions/runs?per_page=100").get("workflow_runs", [])
+        head_sha = request_json("/repos/" + repo + "/branches/" + quote(branch, safe="")).get("commit", {}).get("sha")
+        runs = request_json("/repos/" + repo + "/actions/runs?branch=" + quote(branch, safe="") + "&per_page=100").get("workflow_runs", [])
         prs = request_json("/repos/" + repo + "/pulls?state=open&per_page=100")
         last_day = now - timedelta(days=1)
         recent = [x for x in runs if x.get("head_branch") == branch and
                   x.get("event") in {"push", "workflow_dispatch", "schedule"} and
                   isinstance(x.get("created_at"), str) and
                   parse_timestamp(x["created_at"]) >= last_day]
-        latest = latest_main_workflows(runs, branch)
+        latest = latest_main_workflows(runs, branch, head_sha)
         return {"repo": repo, "state": "OBSERVED",
                 "default_branch": branch,
+                "default_head_sha": head_sha,
+                "current_head_evidence": "OBSERVED" if any(w["matches_default_head"] for w in latest) else "UNKNOWN",
                 "open_pr_count": len(prs) if isinstance(prs, list) else "UNKNOWN",
                 "latest_main_workflows": latest,
                 "last_24h_main_runs": len(recent),
                 "last_24h_failed_main_runs": sum(x.get("conclusion") in FAILED for x in recent),
-                "warning": "Last 100 API runs only; sparse/path-filtered workflows may not run on every commit"}
+                "warning": "Last 100 default-branch API runs only; historical PASS is not current-HEAD verification; sparse/path-filtered workflows may not run on every commit"}
     except (urllib.error.URLError, OSError, TimeoutError, ValueError, KeyError) as exc:
         return {"repo": repo, "state": "UNKNOWN", "error_type": type(exc).__name__}
 
@@ -195,10 +201,13 @@ def as_markdown(report: dict) -> str:
             lines.append(f"- {item['repo']}: **{item['state']}** (not silently counted as PASS)")
             continue
         states = Counter(w["state"] for w in item["latest_main_workflows"])
+        current = Counter(w["current_head_state"] for w in item["latest_main_workflows"])
         lines.append(f"- {item['repo']}: "
                      f"{states.get('PASS',0)} PASS, {states.get('FAIL',0)} FAIL, "
                      f"{states.get('UNKNOWN',0)} UNKNOWN across latest main runs; "
-                     f"{item['open_pr_count']} open PR(s)")
+                     f"{item['open_pr_count']} open PR(s). "
+                     f"Current HEAD: {current.get('PASS',0)} PASS, {current.get('FAIL',0)} FAIL, "
+                     f"{current.get('UNKNOWN',0)} UNKNOWN; evidence {item['current_head_evidence']}")
     lines.extend(["", "## Public page checks — HTTP only"])
     for name, obs in report["live_http_checks"].items():
         lines.append(f"- {name}: **{obs['state']}** — {obs['url']}")
