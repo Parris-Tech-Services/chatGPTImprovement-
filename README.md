@@ -47,6 +47,7 @@ If verification cannot be performed, state **PARTIALLY COMPLETE** or **BLOCKED**
 **Important correction:** the verification/continuity architecture is **not** a new PIP proposal. Existing [AgentCheck / AgentWitness](https://github.com/Parris-Tech-Services/AgentCheck), [LLMAccountability](https://github.com/Parris-Tech-Services/LLMAccountability), [JoshMemory](https://github.com/joshualparris/JoshMemory), and [ForgeGrid](https://github.com/Parris-Tech-Services/ForgeGrid) implement major parts of it already. A private multi-agent review/coordinator and local supervisor were also developed or discussed; don't publish private repo locations here.
 
 - [Live-source accountability inventory and integration gap audit](docs/EXISTING_ACCOUNTABILITY_STACK_AUDIT_2026-10-29.md)
+- [6 November Work continuation: proven repairs, exact-main/browser verification and remaining gaps](docs/ACCOUNTABILITY_REPAIR_WORK_CONTINUATION_2026-11-06.md)
 - [Recovered previous-chat decisions and chronology](docs/PREVIOUS_CHAT_HISTORY_ACCOUNTABILITY_2026-10-29.md)
 
 **First engineering step:** prove that the actual workflow *invokes* existing evidence gates and tests an actual user outcome. Publishing a process document does **not** configure ChatGPT or its hosted tools to use these local CLIs.
