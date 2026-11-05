@@ -165,3 +165,13 @@
 ## Audit coverage and non-claims
 
 Reviewed current improvement repo issues, relevant public source/docs/test paths, private coordinator design at a high level, open ForgeGrid PR/issue inventory, and prior research documents. **No code change or test execution in other repositories** was performed by constructing this backlog. Previously written research documents remain evidence-limited as labelled. This is a **consolidation of identified outstanding work**, not a guarantee that no undiscovered work remains.
+
+## 6 November 2026 — existing I02 verifier consumer repair
+
+Owner: ChatGPT Work accountability audit, branch `fix/use-repaired-accountability-verifiers-20261106`. Narrow scope: existing real-verifier-proof workflow pins and existing smoke script. Current main `339efb7d672ce4c5b652922466d1a918ad0b8474`; open PR #18 S02 modifies other sections of the same workflow and is preserved, including its pending canary/action-pin work. No existing task ID or checkbox state is changed.
+
+Existing consumer pinned AW4d7746d and LLMA881ef0cd, predating the completion-integrity repairs. Pins now target repaired merged AW97bc547bb996ceee26570a60376d6ae4df9a3187 and LLMA02f75ec4550799e8d8ce59039bfb8cbe4a781a2f. Existing integration explicitly exercises empty extracted claims and VERIFIED COMPLETE without evidence, alongside its existing real broker and missing-notary negatives. Protected Windows notary remains unavailable; no native hosted-agent interception or general semantic completion guarantee is claimed.
+
+Status: PARTIALLY COMPLETE pending actual smoke execution, independent review, exact-head CI and safe merge/readback. Narrow ownership releases on successful reviewed merge. Existing S02 work and all other open programme tasks remain open.
+
+Local execution evidence: installed repaired AgentWitness from its actual source and ran `scripts/verify_agent_stack_ci.py` against this complete source snapshot plus repaired LLMAccountability. All eight real broker/final-gate steps passed expected exits, V2 empty-claim/VERIFIED COMPLETE negatives passed, and actual agy.py CLI refused the unavailable protected notary. Local source snapshot Git SHA is not canonical GitHub deployment evidence. Root reviewer must inspect exact-head CI before merge.

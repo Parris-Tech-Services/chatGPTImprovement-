@@ -71,6 +71,11 @@ def llm_policy_proof(llm_root: Path) -> dict:
     from v2.policy.engine import PolicyEngine
     from v2.recipes.base import RecipeResult, Verdict
 
+    if PolicyEngine.evaluate([], {})["final_verdict"] != Verdict.INCONCLUSIVE:
+        raise RuntimeError("Empty claim extraction falsely passed")
+    verified_claims = ClaimExtractor.extract("VERIFIED COMPLETE", report_id=TASK)
+    if not verified_claims or PolicyEngine.evaluate(verified_claims, {})["final_verdict"] == Verdict.PASS:
+        raise RuntimeError("VERIFIED COMPLETE bypassed missing evidence")
     claims = ClaimExtractor.extract("The automated tests passed, I pushed to main, fully complete", report_id=TASK)
     names = {c["type"] for c in claims}
     if not {"tests-pass", "pushed", "fully-complete"}.issubset(names):
@@ -93,7 +98,7 @@ def llm_policy_proof(llm_root: Path) -> dict:
     )
     if pass_policy["final_verdict"] != Verdict.PASS:
         raise RuntimeError("Policy did not accept supported positive test claim")
-    return {"actual_llm_source_invoked": True, "claim_types_extracted": sorted(names),
+    return {"actual_llm_source_invoked": True, "empty_claims_rejected": True, "verified_complete_without_evidence_rejected": True, "claim_types_extracted": sorted(names),
             "missing_evidence_fail_closed": True,
             "unsupported_fully_complete_rejected": True,
             "positive_policy_unit_case": True,

@@ -35,14 +35,14 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: Parris-Tech-Services/AgentCheck
-          ref: 4d7746d664e4c2d75e64a8436df0bc9b7c9dfc9e
+          ref: 97bc547bb996ceee26570a60376d6ae4df9a3187
           path: .external_verifiers/agentcheck
           persist-credentials: false
       - name: Checkout pinned LLMAccountability implementation
         uses: actions/checkout@v4
         with:
           repository: Parris-Tech-Services/LLMAccountability
-          ref: 881ef0cdd8da3a3bd025bdc78ed8e00cef602ad8
+          ref: 02f75ec4550799e8d8ce59039bfb8cbe4a781a2f
           path: .external_verifiers/llmaccountability
           persist-credentials: false
       - name: Prevent vendored dependencies from joining target test scope
