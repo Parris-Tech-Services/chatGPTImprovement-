@@ -10,6 +10,7 @@ import argparse
 import csv
 import json
 import os
+import re
 import sys
 import urllib.error
 import urllib.request
@@ -36,6 +37,8 @@ SITE_CHECKS = {
 }
 FAILED = {"failure", "timed_out", "action_required", "startup_failure"}
 MAX_HTTP_BODY = 160_000
+TOWN_RELEASE_URL = "https://repository-town-claude-complete.vercel.app/release.json"
+TOWN_REPO = "joshualparris/JoshMemory"
 
 
 def request_json(path: str) -> dict:
@@ -63,6 +66,42 @@ def check_public_page(url: str) -> dict:
     except (urllib.error.URLError, OSError, TimeoutError) as exc:
         return {"url": url, "state": "UNKNOWN", "error_type": type(exc).__name__,
                 "meaning": "HTTP failed; no browser outcome established"}
+
+
+
+def check_town_production_release(projects: list[dict]) -> dict:
+    """Compare live Town release.json with the observed canonical main SHA.
+
+    This is a version-drift check, not evidence of successful gameplay, release
+    promotion, or a safe hosting failover. No credentials go to the public host.
+    """
+    expected = next((p.get("default_head_sha") for p in projects
+                     if p.get("repo") == TOWN_REPO and p.get("state") == "OBSERVED"), None)
+    base = {"url": TOWN_RELEASE_URL, "repository": TOWN_REPO,
+            "expected_main_sha": expected, "state": "UNKNOWN",
+            "meaning": "Public release/version parity only; not a browser playtest"}
+    if not isinstance(expected, str) or not re.fullmatch(r"[0-9a-f]{40}", expected):
+        return {**base, "reason": "canonical main SHA not independently available"}
+    try:
+        req = urllib.request.Request(TOWN_RELEASE_URL,
+                                     headers={"Accept": "application/json",
+                                              "User-Agent": "faithful-quality-audit/1.0"})
+        with urllib.request.urlopen(req, timeout=18) as response:
+            if response.status != 200:
+                return {**base, "http_status": response.status,
+                        "reason": "release manifest unavailable"}
+            raw = response.read(8193)
+        if len(raw) > 8192:
+            return {**base, "reason": "release manifest unexpectedly large"}
+        live = json.loads(raw).get("sourceCommit")
+        if not isinstance(live, str) or not re.fullmatch(r"[0-9a-f]{40}", live):
+            return {**base, "reason": "live sourceCommit missing or malformed"}
+        return {**base, "live_source_sha": live,
+                "state": "PASS" if live == expected else "FAIL",
+                "reason": "exact source SHA match" if live == expected else "live release differs from current main"}
+    except (urllib.error.URLError, OSError, TimeoutError, ValueError, TypeError) as exc:
+        return {**base, "reason": "release manifest could not be independently read",
+                "error_type": type(exc).__name__}
 
 
 def latest_main_workflows(runs: list[dict], branch: str, head_sha: str | None = None) -> list[dict]:
@@ -159,6 +198,7 @@ def build_report(base: Path, now: datetime, offline: bool) -> dict:
     local = local_scorecard(base)
     projects = [] if offline else [remote_project(r, now) for r in REPOSITORIES]
     pages = {} if offline else {name: check_public_page(url) for name, url in SITE_CHECKS.items()}
+    releases = {} if offline else {"Repository Town production": check_town_production_release(projects)}
     red = [x["repo"] for x in projects
            if x["state"] == "OBSERVED" and any(
                w["state"] == "FAIL" for w in x["latest_main_workflows"])]
@@ -170,6 +210,7 @@ def build_report(base: Path, now: datetime, offline: bool) -> dict:
         "tracked_programme": local,
         "public_projects": projects,
         "live_http_checks": pages,
+        "production_release_checks": releases,
         "red_latest_main_workflows_repos": red,
         "unknown_api_repos": unknown,
         "source_commit": os.getenv("GITHUB_SHA", "LOCAL/UNSET"),
@@ -211,6 +252,11 @@ def as_markdown(report: dict) -> str:
     lines.extend(["", "## Public page checks — HTTP only"])
     for name, obs in report["live_http_checks"].items():
         lines.append(f"- {name}: **{obs['state']}** — {obs['url']}")
+    lines.extend(["", "## Production release parity — not a gameplay test"])
+    for name, obs in report.get("production_release_checks", {}).items():
+        lines.append(f"- {name}: **{obs[\x27state\x27]}** — {obs[\x27reason\x27]}; "
+                     f"main={obs.get(\x27expected_main_sha\x27) or \x27UNKNOWN\x27}, "
+                     f"live={obs.get(\x27live_source_sha\x27) or \x27UNKNOWN\x27}")
     lines.extend(["", "## Evidence and boundaries",
                   "- All raw reports are produced from real API/HTTP observations, not simulated claims.",
                   "- No chat transcripts, email, signing keys or private machine data are collected.",
@@ -237,7 +283,8 @@ def main(argv=None) -> int:
             fp.write(summary)
     print(summary)
     fails = bool(report["red_latest_main_workflows_repos"]) or any(
-        x["state"] == "FAIL" for x in report["live_http_checks"].values())
+        x["state"] == "FAIL" for x in report["live_http_checks"].values()) or any(
+        x["state"] == "FAIL" for x in report.get("production_release_checks", {}).values())
     return 1 if args.strict and fails else 0
 
 
