@@ -154,6 +154,20 @@ class DailyQualityTests(unittest.TestCase):
                           side_effect=AssertionError("must not try network")):
             self.assertEqual(q.check_town_production_release([])["state"], "UNKNOWN")
 
+    def test_town_release_real_sized_manifest_is_checked(self):
+        class Response:
+            status = 200
+            def read(self, _):
+                return json.dumps({"sourceCommit": "a"*40,
+                                   "files": {"large": "x"*100_000}}).encode()
+            def __enter__(self): return self
+            def __exit__(self, *_): return None
+        with patch.object(q.urllib.request, "urlopen", return_value=Response()):
+            result = q.check_town_production_release([
+                {"repo": q.TOWN_REPO, "state": "OBSERVED", "default_head_sha": "b"*40}])
+        self.assertEqual(result["state"], "FAIL")
+        self.assertEqual(result["live_source_sha"], "a"*40)
+
     def test_town_release_non_object_json_is_unknown(self):
         class Response:
             status = 200
