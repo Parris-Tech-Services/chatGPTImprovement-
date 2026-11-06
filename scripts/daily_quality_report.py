@@ -93,7 +93,10 @@ def check_town_production_release(projects: list[dict]) -> dict:
             raw = response.read(8193)
         if len(raw) > 8192:
             return {**base, "reason": "release manifest unexpectedly large"}
-        live = json.loads(raw).get("sourceCommit")
+        manifest = json.loads(raw)
+        if not isinstance(manifest, dict):
+            return {**base, "reason": "release manifest is not a JSON object"}
+        live = manifest.get("sourceCommit")
         if not isinstance(live, str) or not re.fullmatch(r"[0-9a-f]{40}", live):
             return {**base, "reason": "live sourceCommit missing or malformed"}
         return {**base, "live_source_sha": live,
