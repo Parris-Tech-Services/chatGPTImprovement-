@@ -39,6 +39,7 @@ FAILED = {"failure", "timed_out", "action_required", "startup_failure"}
 MAX_HTTP_BODY = 160_000
 TOWN_RELEASE_URL = "https://repository-town-claude-complete.vercel.app/release.json"
 TOWN_REPO = "joshualparris/JoshMemory"
+TOWN_MANIFEST_MAX_BYTES = 512_000
 
 
 def request_json(path: str) -> dict:
@@ -90,8 +91,8 @@ def check_town_production_release(projects: list[dict]) -> dict:
             if response.status != 200:
                 return {**base, "http_status": response.status,
                         "reason": "release manifest unavailable"}
-            raw = response.read(8193)
-        if len(raw) > 8192:
+            raw = response.read(TOWN_MANIFEST_MAX_BYTES + 1)
+        if len(raw) > TOWN_MANIFEST_MAX_BYTES:
             return {**base, "reason": "release manifest unexpectedly large"}
         manifest = json.loads(raw)
         if not isinstance(manifest, dict):
