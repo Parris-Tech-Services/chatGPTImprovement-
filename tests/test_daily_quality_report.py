@@ -154,6 +154,17 @@ class DailyQualityTests(unittest.TestCase):
                           side_effect=AssertionError("must not try network")):
             self.assertEqual(q.check_town_production_release([])["state"], "UNKNOWN")
 
+    def test_town_release_non_object_json_is_unknown(self):
+        class Response:
+            status = 200
+            def read(self, _): return b"[]"
+            def __enter__(self): return self
+            def __exit__(self, *_): return None
+        with patch.object(q.urllib.request, "urlopen", return_value=Response()):
+            result = q.check_town_production_release([
+                {"repo": q.TOWN_REPO, "state": "OBSERVED", "default_head_sha": "a"*40}])
+        self.assertEqual(result["state"], "UNKNOWN")
+
     def test_town_release_unreadable_manifest_is_unknown(self):
         with patch.object(q.urllib.request, "urlopen", side_effect=OSError("protected")):
             result = q.check_town_production_release([
