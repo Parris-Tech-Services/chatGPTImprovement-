@@ -254,9 +254,9 @@ def as_markdown(report: dict) -> str:
         lines.append(f"- {name}: **{obs['state']}** — {obs['url']}")
     lines.extend(["", "## Production release parity — not a gameplay test"])
     for name, obs in report.get("production_release_checks", {}).items():
-        lines.append(f"- {name}: **{obs[\x27state\x27]}** — {obs[\x27reason\x27]}; "
-                     f"main={obs.get(\x27expected_main_sha\x27) or \x27UNKNOWN\x27}, "
-                     f"live={obs.get(\x27live_source_sha\x27) or \x27UNKNOWN\x27}")
+        lines.append(f"- {name}: **{obs['state']}** — {obs['reason']}; "
+                     f"main={obs.get('expected_main_sha') or 'UNKNOWN'}, "
+                     f"live={obs.get('live_source_sha') or 'UNKNOWN'}")
     lines.extend(["", "## Evidence and boundaries",
                   "- All raw reports are produced from real API/HTTP observations, not simulated claims.",
                   "- No chat transcripts, email, signing keys or private machine data are collected.",
