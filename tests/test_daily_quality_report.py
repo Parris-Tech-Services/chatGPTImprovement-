@@ -122,6 +122,79 @@ class DailyQualityTests(unittest.TestCase):
             s=q.check_public_page(q.SITE_CHECKS["FaithHub home"])
         self.assertEqual(s["state"],"FAIL")
 
+
+    def test_town_release_mismatch_fails_even_if_host_is_ready(self):
+        class Response:
+            status = 200
+            def read(self, _): return json.dumps({"sourceCommit": "a"*40}).encode()
+            def __enter__(self): return self
+            def __exit__(self, *_): return None
+        projects = [{"repo": q.TOWN_REPO, "state": "OBSERVED", "default_head_sha": "b"*40}]
+        with patch.object(q.urllib.request, "urlopen", return_value=Response()) as request:
+            result = q.check_town_production_release(projects)
+        self.assertEqual(result["state"], "FAIL")
+        self.assertEqual(result["live_source_sha"], "a"*40)
+        self.assertEqual(request.call_args.args[0].full_url, q.TOWN_RELEASE_URL)
+        self.assertNotIn("Authorization", dict(request.call_args.args[0].header_items()))
+
+    def test_town_release_equal_sha_passes_version_parity_only(self):
+        class Response:
+            status = 200
+            def read(self, _): return json.dumps({"sourceCommit": "a"*40}).encode()
+            def __enter__(self): return self
+            def __exit__(self, *_): return None
+        with patch.object(q.urllib.request, "urlopen", return_value=Response()):
+            result = q.check_town_production_release([
+                {"repo": q.TOWN_REPO, "state": "OBSERVED", "default_head_sha": "a"*40}])
+        self.assertEqual(result["state"], "PASS")
+        self.assertIn("not a browser playtest", result["meaning"])
+
+    def test_town_release_missing_main_does_not_claim_success_or_network(self):
+        with patch.object(q.urllib.request, "urlopen",
+                          side_effect=AssertionError("must not try network")):
+            self.assertEqual(q.check_town_production_release([])["state"], "UNKNOWN")
+
+    def test_town_release_real_sized_manifest_is_checked(self):
+        class Response:
+            status = 200
+            def read(self, _):
+                return json.dumps({"sourceCommit": "a"*40,
+                                   "files": {"large": "x"*100_000}}).encode()
+            def __enter__(self): return self
+            def __exit__(self, *_): return None
+        with patch.object(q.urllib.request, "urlopen", return_value=Response()):
+            result = q.check_town_production_release([
+                {"repo": q.TOWN_REPO, "state": "OBSERVED", "default_head_sha": "b"*40}])
+        self.assertEqual(result["state"], "FAIL")
+        self.assertEqual(result["live_source_sha"], "a"*40)
+
+    def test_town_release_non_object_json_is_unknown(self):
+        class Response:
+            status = 200
+            def read(self, _): return b"[]"
+            def __enter__(self): return self
+            def __exit__(self, *_): return None
+        with patch.object(q.urllib.request, "urlopen", return_value=Response()):
+            result = q.check_town_production_release([
+                {"repo": q.TOWN_REPO, "state": "OBSERVED", "default_head_sha": "a"*40}])
+        self.assertEqual(result["state"], "UNKNOWN")
+
+    def test_town_release_unreadable_manifest_is_unknown(self):
+        with patch.object(q.urllib.request, "urlopen", side_effect=OSError("protected")):
+            result = q.check_town_production_release([
+                {"repo": q.TOWN_REPO, "state": "OBSERVED", "default_head_sha": "a"*40}])
+        self.assertEqual(result["state"], "UNKNOWN")
+
+    def test_strict_report_rejects_proven_stale_town_production(self):
+        with tempfile.TemporaryDirectory() as d:
+            report = {"red_latest_main_workflows_repos": [], "live_http_checks": {},
+                      "production_release_checks": {"Repository Town production": {"state": "FAIL"}}}
+            with (
+                patch.object(q, "build_report", return_value=report),
+                patch.object(q, "as_markdown", return_value="Stale production"),
+            ):
+                self.assertEqual(q.main(["--strict", "--out", d]), 1)
+
     def test_offline_run_never_networks_or_claims_daily_task_metrics(self):
         with tempfile.TemporaryDirectory() as d:
             root=Path(d);(root/"docs/evidence").mkdir(parents=True)
@@ -131,6 +204,7 @@ class DailyQualityTests(unittest.TestCase):
                 out=q.build_report(root,datetime(2026,10,30,0,tzinfo=timezone.utc),True)
             self.assertEqual(out["public_projects"],[])
             self.assertEqual(out["live_http_checks"],{})
+            self.assertEqual(out["production_release_checks"],{})
             self.assertIn("UNKNOWN",q.as_markdown(out))
 
 if __name__ == "__main__":
