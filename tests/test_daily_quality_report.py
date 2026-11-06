@@ -164,8 +164,10 @@ class DailyQualityTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             report = {"red_latest_main_workflows_repos": [], "live_http_checks": {},
                       "production_release_checks": {"Repository Town production": {"state": "FAIL"}}}
-            with patch.object(q, "build_report", return_value=report), \\
-                 patch.object(q, "as_markdown", return_value="Stale production"):
+            with (
+                patch.object(q, "build_report", return_value=report),
+                patch.object(q, "as_markdown", return_value="Stale production"),
+            ):
                 self.assertEqual(q.main(["--strict", "--out", d]), 1)
 
     def test_offline_run_never_networks_or_claims_daily_task_metrics(self):
